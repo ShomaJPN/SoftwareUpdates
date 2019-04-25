@@ -1,28 +1,28 @@
 # SoftwareUpdates
 
 ## Overview
-Check and Change the User's SoftwareUpdate policy,and update the SoftwareUpdate.
-Display FinderDialog for changing / installing during Finderlogin.
-It is written in Bash ShellScript and is used with launchd / launchctl.(ex. check Every xx hours while logged in)
+Check and Change the User's SoftwareUpdate policy,and update the SoftwareUpdate.  
+Display FinderDialog for changing / installing during Finderlogin.  
+It is written in Bash ShellScript and is used with launchd / launchctl.(ex. check Every xx hours while logged in)  
 
 ## Description
-It was made to realize ReminderService that is not enough with push-service(MDM).
-Check the SoftwareUpdate policy at specific time while logging in.
-Display FinderDialog for changing / installing, do it.
-Suitable for organizations that do not force users.
+It was made to realize ReminderService that is not enough with push-service(MDM).  
+Check the SoftwareUpdate policy at specific time while logging in.  
+Display FinderDialog for changing / installing, do it.  
+Suitable for organizations that do not force users.  
 
 ## Requirement
--Bash (for ShellScript)
- -osascript (for FinderDialog)
- -do shell script (for ShellScript /w osascript)
--Tested under Mojave
+- Bash (for ShellScript)
+ - osascript (for FinderDialog)
+ - do shell script (for ShellScript /w osascript)
+- Tested under Mojave
 
 ## Usage
 Copy ShellScript to a specific user directory.
--CheckAndChange_AppleSWUpdatePolicies.sh :AppleSoftware Policy check and change script
--AppleSoftwareUpdate.sh                  :AppleSoftware update script
+- CheckAndChange_AppleSWUpdatePolicies.sh :AppleSoftware Policy check and change script
+- AppleSoftwareUpdate.sh                  :AppleSoftware update script
 Set up launchctl / launchd.
--com.myOrganization.cmd.plist            :Sample /launchd-plist file.
+- com.myOrganization.cmd.plist            :Sample /launchd-plist file.
 
 ## Install
 Put 2-ShellScripts to the appropriate directory  (ex.~/Script)
