@@ -18,14 +18,14 @@ Suitable for organizations that do not force users.
 - Tested under Mojave
 
 ## Usage
-Copy ShellScripts to a specific user directory.
-- CheckAndChange_AppleSWUpdatePolicies.sh   - AppleSoftware Policy check and change script
-- AppleSoftwareUpdate.sh                    - AppleSoftware update script  
+Copy following ShellScripts to a specific user directory.
+- CheckAndChange_AppleSWUpdatePolicies.sh   <-- AppleSoftware Policy check and change script
+- AppleSoftwareUpdate.sh                    <-- AppleSoftware update script  
 
 Set up launchctl / launchd.
-- com.myOrganization.cmd.plist              - Sample /launchd-plist file.
+- com.myOrganization.cmd.plist              <-- Sample /launchd-plist file.
 
-## Install
+## Install and Run
 Put 2-ShellScripts to the appropriate directory  `(ex.~/Script)`  
 Make/Change launchd-plist file according to your environment, then put it to the appropriate directory `(ex.~/Library/LaunchAgents)`  
 
