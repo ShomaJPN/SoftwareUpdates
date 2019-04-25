@@ -1,6 +1,6 @@
 # SoftwareUpdates
 
-Overview
+## Overview
 Check and Change the User's SoftwareUpdate policy,and update the SoftwareUpdate.
 Display FinderDialog for changing / installing during Finderlogin.
 It is written in Bash ShellScript and is used with launchd / launchctl.(ex. check Every xx hours while logged in)
@@ -25,7 +25,7 @@ Set up launchctl / launchd.
 -com.myOrganization.cmd.plist            :Sample /launchd-plist file.
 
 ## Install
-Put 2-ShellScripts to the appropriate directory (ex.~/Script)
+Put 2-ShellScripts to the appropriate directory  (ex.~/Script)
 Make/Change launchd-plist file according to your environment.
 then put it to the appropriate directory (ex.~/Library/LaunchAgents)
 
@@ -34,9 +34,9 @@ Start with the following command (only the first time)
 Stop is ...
   launchctl unload /Path/to/plist
 Stop forever...
-  Remove plist from the appropriate directory (ex.~/Library/LaunchAgents)
+  Remove plist from the appropriate directory  (ex.~/Library/LaunchAgents)
 Check is ...
   launchctl list
 
 ## Author
-SHOMA Shimahara<shoma@yk.rim.or.jp>
+SHOMA Shimahara :<shoma@yk.rim.or.jp>
