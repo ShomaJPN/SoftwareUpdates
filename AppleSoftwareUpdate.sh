@@ -1,19 +1,18 @@
 #!/bin/bash
 ##
 ## AppleSoftwareUpdate.sh
-## Created by SHOMA on 4/18/2019. Last edited by SHOMA 4/24/2019
+## Created by SHOMA on 4/18/2019. Last edited by SHOMA 4/26/2019
 ##
 ## -----
-## Display FinderDialog for User and update macOS (need Finder login)
+## Display FinderDialog for LoginUser ,and update macOS (need Finder login)
 ## Use with launchd/launchctl (ex. check Every xx hours while logged in)
 ##
 ## -Touch ID compatible
-## -Could ReSet Update-policy (Test Drive..not enough time to test widly)
 ##
 ## -----
 ## remark.
-## softwareupdate's "--include-config-data" option is update GateKeeper
-##  & XProtect ,ONLY after macOS 10.13.x
+## softwareupdate's "--include-config-data" option .. GateKeeper & XProtect
+## in ONLY use after macOS 10.13.x
 ##
 ## -----
 ## ref.
@@ -101,34 +100,46 @@ ITサポートチーム(tel.xxx-xxxx-xxxx)
 [ -z "$1" ] && Mes="$MesNoRestart" || Mes="$MesReqRestart"
 
 
-## Display FinderDialog
-AnswerReply=`osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+## Display FinderDialog (Caution Dialog)
+AnswerOfCautionDiag=`osascript <<-EOD &>/dev/null && echo OK || echo Cancel
 tell application "System Events" to display dialog "$Mes" with icon 0
 EOD`
 
 
-## Cancel or Not 
-[ "$AnswerReply" = "Cancel" ] &&
+## OK or Cancel (Caution Dialog)
+## Cancel 
+[ "$AnswerOfCautionDiag" = "Cancel" ] &&
 SendToLog "Cancel AppleSoftwareUpdates by User" ||
 
+## OK
 ## Restart or Not
-# Need to Restart
+## Need to Restart
 if [ "$1" = "with administrator privileges" ]; then
     SendToLog "Start Updates with Restart"
-    osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+    AnswerOfAdminDiag=`osascript <<-EOD &>/dev/null && echo OK || echo Cancel
 do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $@
-EOD
+EOD`
 
-# Not Need to Restart
+## Cancel  (AdminPriv.)
+    [ "$AnswerOfAdminDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
+## OK  (AdminPriv.) and Finish install
+    [ "$AnswerOfAdminDiag" = "OK" ] && SendToLog "Finish AppleSoftwareUpdates (and restart)"
+
+
+
+## Not Need to Restart
   elif [ "$1" = "" ]; then
     SendToLog "Start Updates WITHOUT Restart"
     osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-do shell script "softwareupdate -ia  --include-config-data 2>/dev/null"
+do shell script "softwareupdate -ia --include-config-data 2>/dev/null"
 EOD
-    SendToLog "Finish AppleSoftwareUpdates"
+
+    SendToLog "Finish AppleSoftwareUpdates" &&
     osascript <<-EOD &>/dev/null && echo OK || echo Cancel
 tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
 EOD
+
+
 
 else
     echo "something wrong!"
@@ -156,8 +167,9 @@ fi
 ##
 ##
 
-UpdatesReply=$(softwareupdate -l --include-config-data)
 #UpdatesReply=$(softwareupdate -l)
+UpdatesReply=$(softwareupdate -l --include-config-data)
+
 
 # for debug
 echo "$UpdatesReply" 
