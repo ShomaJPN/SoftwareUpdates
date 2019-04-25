@@ -20,7 +20,8 @@ Suitable for organizations that do not force users.
 ## Usage
 Copy ShellScript to a specific user directory.
 - CheckAndChange_AppleSWUpdatePolicies.sh :AppleSoftware Policy check and change script
-- AppleSoftwareUpdate.sh                  :AppleSoftware update script
+- AppleSoftwareUpdate.sh                  :AppleSoftware update script  
+
 Set up launchctl / launchd.
 - com.myOrganization.cmd.plist            :Sample /launchd-plist file.
 
