@@ -1,4 +1,4 @@
-# SoftwareUpdates
+# SoftwareUpdates (macOS)
 
 ## Overview
 Check and Change the User's SoftwareUpdate policy,and update the SoftwareUpdate.  
@@ -8,7 +8,7 @@ It is written in Bash ShellScript and is used with launchd / launchctl.(ex. chec
 ## Description
 It was made to realize ReminderService that is not enough with push-service(MDM).  
 Check the SoftwareUpdate policy at specific time while logging in.  
-Display FinderDialog for changing / installing, do it.  
+Display FinderDialog for changing / installing,then do it.  
 Suitable for organizations that do not force users.  
 
 ## Requirement
