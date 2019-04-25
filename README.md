@@ -13,8 +13,8 @@ Suitable for organizations that do not force users.
 
 ## Requirement
 - Bash (for ShellScript)
- - osascript (for FinderDialog)
- - do shell script (for ShellScript /w osascript)
+  - osascript (for FinderDialog)
+  - do shell script (for ShellScript /w osascript)
 - Tested under Mojave
 
 ## Usage
