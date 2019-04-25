@@ -26,9 +26,9 @@ Set up launchctl / launchd.
 - com.myOrganization.cmd.plist              - Sample /launchd-plist file.
 
 ## Install
-Put 2-ShellScripts to the appropriate directory  (ex.~/Script)
+Put 2-ShellScripts to the appropriate directory  `(ex.~/Script)`
 Make/Change launchd-plist file according to your environment.
-then put it to the appropriate directory (ex.~/Library/LaunchAgents)
+then put it to the appropriate directory `(ex.~/Library/LaunchAgents)`
 
 Start with the following command (only the first time)
 　```launchctl load /Path/to/plist```
@@ -40,4 +40,4 @@ Check is ...
   ```launchctl list```
 
 ## Author
-SHOMA Shimahara :<shoma@yk.rim.or.jp>
+SHOMA Shimahara : <shoma@yk.rim.or.jp>
