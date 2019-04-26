@@ -1,15 +1,13 @@
 # SoftwareUpdates (macOS)
 
 ## Overview
-Check and Change the User's SoftwareUpdate policy,and update the SoftwareUpdate.  
-Display FinderDialog for changing / installing during Finderlogin.  
-It is written in Bash ShellScript and is used with launchd / launchctl.(ex. check Every xx hours while logged in)  
+This Bash ShellScript checks and changes the User's SoftwareUpdate policy, and install SoftwareUpdate.
+Displays FinderDialog for changing / installing during Finder login ,using with launchd / launchctl. (ex. check Every xx hours while logged in)  
 
 ## Description
-It was made to realize ReminderService that is not enough with push-service(MDM).  
-Check the SoftwareUpdate policy at specific time while logging in.  
-Display FinderDialog for changing / installing,then do it.  
-Suitable for organizations that do not force users.  
+It was made to realize UserReminderService, promote Education to users that is not enough with push-service(MDM).  
+Check SoftwareUpdate policy and new files during Finderlogin, show FinderDialog for changing / installing (then do it)  
+Suitable for organizations that encourage users to act.  
 
 ## Requirement
 - Bash (for ShellScript)
@@ -26,7 +24,7 @@ Set up launchctl / launchd.
 - com.myOrganization.cmd.plist              <-- Sample /launchd-plist file.
 
 ## Install and Run
-Put 2-ShellScripts to the appropriate directory  `(ex.~/Script)`  
+Put ShellScripts to the appropriate directory  `(ex.~/Script)`  
 Make/Change launchd-plist file according to your environment, then put it to the appropriate directory `(ex.~/Library/LaunchAgents)`  
 
 Start with the following command (only the first time)  
