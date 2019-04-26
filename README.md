@@ -21,11 +21,11 @@ Copy following ShellScripts to a specific user directory.
 - AppleSoftwareUpdate.sh                    <-- AppleSoftware update script  
 
 Set up launchctl / launchd.
-- com.myOrganization.cmd.plist              <-- Sample /launchd-plist file.
+- com.myOrganization.cmd.plist              <-- Sample /command plist file.
 
 ## Install and Run
 Put ShellScripts to the appropriate directory  `(ex.~/Script)`  
-Make/Change launchd-plist file according to your environment, then put it to the appropriate directory `(ex.~/Library/LaunchAgents)`  
+Make/Change plist file according to your environment,  put it to the appropriate directory `(ex.~/Library/LaunchAgents)`  
 
 Start with the following command (only the first time)  
 　```launchctl load /Path/to/plist```  
