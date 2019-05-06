@@ -1,31 +1,33 @@
 # SoftwareUpdates (macOS)
 
 ## Overview
-This Bash ShellScript checks and changes the User's SoftwareUpdate policy, and install SoftwareUpdate.
-Displays FinderDialog for changing / installing during Finder login ,using with launchd / launchctl. (ex. check Every xx hours while logged in)  
+This Tiny Bash ShellScript help to check & change User's SoftwareUpdate policies, and install SoftwareUpdate.
+During Finder login time, Check and display FinderDialog to user for changing / installing.  
+Even if administrator privileges is reauired, execute using Touch ID or FinderDialg.
+Use with launchd / launchctl. (ex. check Every xx hours while logged in)  
 
 ## Description
-It was made to realize UserReminderService, promote Education to users that is not enough with push-service(MDM).  
-Check SoftwareUpdate policy and new files during Finderlogin, show FinderDialog for changing / installing (then do it)  
-Suitable for organizations that encourage users to act.  
+This was made to realize UserRemind and promote Education to users that is not enough with push-service(MDM).  
+Suitable for organizations that encourage users to act, may be ..  
 
-## Requirement
+## Requirements
 - Bash (for ShellScript)
   - osascript (for FinderDialog)
   - do shell script (for ShellScript /w osascript)
-- Tested under Mojave
+- Tested under Mojave 10.14.4 (Confrim Dialog/TCC appear at the first run)
 
 ## Usage
-Copy following ShellScripts to a specific user directory.
+Excute these ShellScripts with launchctl / launchd.
 - CheckAndChange_AppleSWUpdatePolicies.sh   <-- AppleSoftware Policy check and change script
 - AppleSoftwareUpdate.sh                    <-- AppleSoftware update script  
 
-Set up launchctl / launchd.
 - com.myOrganization.cmd.plist              <-- Sample /command plist file.
 
 ## Install and Run
-Put ShellScripts to the appropriate directory  `(ex.~/Script)`  
-Make/Change plist file according to your environment,  put it to the appropriate directory `(ex.~/Library/LaunchAgents)`  
+Put ShellScripts to the appropriate directory  `(ex.~/Script)`  , then set execute permissions.  
+Make or change command plist file according to your environment , then put it to the appropriate directory. `(ex.~/Library/LaunchAgents)`  
+A confirmation dialog (xxx would like to control "System Events"...) appear only once at the first run ,then allow it (in the case of Mojave )  
+If you did not allow for confirmation by mistake, try `$ tccutil reset AppleEvents`  
 
 Start with the following command (only the first time)  
 　```launchctl load /Path/to/plist```  

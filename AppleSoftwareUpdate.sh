@@ -11,7 +11,7 @@
 ##
 ## -----
 ## remark.
-## softwareupdate's "--include-config-data" option .. GateKeeper & XProtect
+## softwareupdate's "--include-config-data" option for GateKeeper & XProtect
 ## in ONLY use after macOS 10.13.x
 ##
 ## -----
