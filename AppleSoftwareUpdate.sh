@@ -2,7 +2,7 @@
 ##
 ## Name:
 ##  AppleSoftwareUpdate.sh
-##  Created by SHOMA on 4/18/2019. Last edited by SHOMA 4/26/2019
+##  Created by SHOMA on 4/18/2019. Last edited by SHOMA 5/9/2019
 ##
 ## Overview:
 ##  Check AppleSystem Updates ,and if present, Display FinderDialog to install.
@@ -40,7 +40,7 @@
 ##    -ia                      : Install All updates without GateKeeper & XProtect data
 ##       --include-config-data : ..including GateKeeper & XProtect data
 ##
-##  "--include-config-data" in ONLY using after macOS 10.13.x
+##  "--include-config-data" is using ONLY after macOS 10.13.x
 ##
 ##
 ## Author: SHOMA Shimahara <shoma@yk.rim.or.jp>
@@ -87,44 +87,10 @@ echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
 #                                   - when Need to Restart/AdminPriv. to install
 #   InstallSoftware ()              - when Not Need to Restart to install
 #
-# Reference:
-#   Messages/Variables 
-#    1. MesReqRestart : Message when there is an update that needs to be restarted
-#    2. MesNoRestart  : Message when there is an update that Not needs to be restarted
-#    3. MesFinishInstall : Message when finished install
-#
 #
 
 function InstallSoftware ()
 {
-
-
-MesReqRestart="ITサポートチームです
-
-重要なソフトウエアアップデートがあります
-この処理は管理者権限が必要で自動的に再起動されます
-許可しますか？
-
-不明な場合はITサポートチーム(tel.xxx-xxxx-xxxx)まで
-
-
-"
-MesNoRestart="ITサポートチームです
-
-重要なソフトウエアアップデートがあります
-この処理には再起動の必要がありません
-インストールを始めても宜しいですか？
-
-不明な場合はITサポートチーム(tel.xxx-xxxx-xxxx)まで
-
-
-"
-MesFinishInstall="アップデートが終了しました
-ご協力ありがとうございました
-ITサポートチーム(tel.xxx-xxxx-xxxx)
-
-
-"
 
 # Change Message by argument
 [ -z "$1" ] && Mes="$MesNoRestart" || Mes="$MesReqRestart" ## Change Message by argument
@@ -135,15 +101,9 @@ AnswerOfCautionDiag=`osascript <<-EOD &>/dev/null && echo OK || echo Cancel
 tell application "System Events" to display dialog "$Mes" with icon 0
 EOD`
 
-
-# Cancel or OK(Caution Dialog)
-# Cancel 
-[ "$AnswerOfCautionDiag" = "Cancel" ] &&
-SendToLog "Cancel AppleSoftwareUpdates by User" ||
-
-# OK
-# Need to Restart or Not
-# Need to Restart --> Display FinderDialog (Auth/AdminPriv.) and install
+# Reply (Caution Dialog) is OK -> Display FinderDialog -> Install
+# Need to Restart
+[ "$AnswerOfCautionDiag" = "OK" ] &&
 if [ "$1" = "with administrator privileges" ]; then
     SendToLog "Start Updates with Restart"
     AnswerOfAdminDiag=$(
@@ -151,13 +111,13 @@ if [ "$1" = "with administrator privileges" ]; then
             do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $@
 EOD
 )
-    [ "$AnswerOfAdminDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
     [ "$AnswerOfAdminDiag" = "OK" ] && SendToLog "Finish AppleSoftwareUpdates (and restart)"
+    [ "$AnswerOfAdminDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
 
 # Not Need to Restart
   elif [ "$1" = "" ]; then
     SendToLog "Start Updates WITHOUT Restart"
-    osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+    osascript <<-EOD &>/dev/null
         do shell script "softwareupdate -ia --include-config-data 2>/dev/null"
 EOD
     SendToLog "Finish AppleSoftwareUpdates" &&
@@ -165,9 +125,12 @@ EOD
         tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
 EOD
 
-  else
-    echo "something wrong!"
 fi
+
+# Reply (Caution Dialog) is Cancel
+[ "$AnswerOfCautionDiag" = "Cancel" ] &&
+SendToLog "Cancel AppleSoftwareUpdates by User"
+
 }
 
 ##################### End of Set Functions / InstallSotware() ######################
@@ -186,6 +149,11 @@ fi
 #   5.NumOfSoftwares:          Number of All Install/Update Software
 #   6.UpdatesFlag [Yes/No]   : Is there Updater or not
 #   7,RestartFlag [Yes/No]   : Neet to Restart or not
+#
+#  Messages --- 
+#   1. MesReqRestart    : Message when there is an update that needs to be restarted
+#   2. MesNoRestart     : Message when there is an update that Not needs to be restarted
+#   3. MesFinishInstall : Message when finished install
 #
 #
 
@@ -215,6 +183,34 @@ echo "UpdatesFlag: " $UpdatesFlag
 echo "RestartFlag: " $RestartFlag
 echo "Num of Updates: " $NumOfSoftwares
 echo -e "Install Software(s):\n" $InstallReqSoftwares
+
+
+MesReqRestart="ITサポートチームです
+
+重要なソフトウエアアップデートがあります
+この処理は管理者権限が必要で自動的に再起動されます
+許可しますか？
+
+不明な場合はITサポートチーム(tel.xxx-xxxx-xxxx)まで
+
+
+"
+MesNoRestart="ITサポートチームです
+
+重要なソフトウエアアップデートがあります
+この処理には再起動の必要がありません
+インストールを始めても宜しいですか？
+
+不明な場合はITサポートチーム(tel.xxx-xxxx-xxxx)まで
+
+
+"
+MesFinishInstall="アップデートが終了しました
+ご協力ありがとうございました
+ITサポートチーム(tel.xxx-xxxx-xxxx)
+
+
+"
 
 ########################  End of Set Variables #########################
 
