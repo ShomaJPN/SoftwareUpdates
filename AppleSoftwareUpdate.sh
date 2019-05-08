@@ -1,32 +1,59 @@
 #!/bin/bash
 ##
-## AppleSoftwareUpdate.sh
-## Created by SHOMA on 4/18/2019. Last edited by SHOMA 4/26/2019
+## Name:
+##  AppleSoftwareUpdate.sh
+##  Created by SHOMA on 4/18/2019. Last edited by SHOMA 4/26/2019
 ##
-## -----
-## Display FinderDialog for LoginUser ,and update macOS (need Finder login)
-## Use with launchd/launchctl (ex. check Every xx hours while logged in)
+## Overview:
+##  Check AppleSystem Updates ,and if present, Display FinderDialog to install.
+##  (Touch ID compatible)
 ##
-## -Touch ID compatible
+## Discription:
+##  This script is made to realize UserReminderService , and promote 
+##  Education for users that is not enough with push-services(MDM)
+##  Suitable for organizations that encourage users to act.
 ##
-## -----
-## remark.
-## softwareupdate's "--include-config-data" option for GateKeeper & XProtect
-## in ONLY use after macOS 10.13.x
+## Requirements:
+##  -macOS
+##  -Test under macOS 10.14.4
 ##
-## -----
-## ref.
-##  If want to add support
-##    -"Mac App Store" software, work with "mas-cli".
-##    -"MS Office" software, work with "msupdate -i|l"(MS official tool) 
+## Install and Run:
+##  - Copy this script to the appropriate directory (ex.~/Script),and set it Excutable.
+##  - Use with launchd/lauchctl
+##   - Make commnad-plist file and put it ~/Library/LaunchAgents/
+##    - Start with the following command (only the first time)
+##       launchctl load /Path/to/plist
+##  　- Stop is ...
+##       launchctl unload /Path/to/plist
+##    - Stop forever...
+##       　Remove plist from ~/Library/LaunchAgents/
+##    - Check is ...
+##       　launchctl list
+##  - A confirmation dialog (xxx would like to control "System Events"...) appear
+##    at the first run, then push allow button.  
+## 
+## References:
+##  If you did not confirm by mistake, try "$ tccutil reset AppleEvents"
+##  
+##  /usr/sbin/softwareupdate
+##    -l                       : List all available updates
+##    -ia                      : Install All updates without GateKeeper & XProtect data
+##       --include-config-data : ..including GateKeeper & XProtect data
+##
+##  "--include-config-data" in ONLY using after macOS 10.13.x
 ##
 ##
+## Author: SHOMA Shimahara <shoma@yk.rim.or.jp>
+##
+
+
+
 
 
 ################### Set "Log" file and function  ######################
 
 LogPath=$HOME/log
-LogFile="$LogPath/SoftwareUpdates.log"
+LogFile="$LogPath/SoftwareUpdatesApple.log"
 
 if [ ! -d "$LogPath" ]; then
     echo "Log directory is not exit!"
@@ -48,26 +75,30 @@ echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
 
 
 ##################### Set Functions /InstallSoftware() ########################
-##
-## function InstallSoftware ()
-##
-## -----
-## Display FinderDialog (to enter UserAuth/AdminPriv.) and install
-##
-## -----
-## argument is one of 
-##   -'with administrator privileges' : Install /w  AdminPriv.
-##   -''                              : Install /wo AdminPriv.
-##
-## ex.
-##  InstallSoftware ('with administrator privileges')
-##                     - Need to Restart/AdminPriv. to Install
-##  InstallSoftware () - Not Need to Restart to Install
-##
-##
+#
+# Name:
+#   function InstallSoftware ()
+#
+# Discription:
+#   Display FinderDialog (Caution & enter UserAuth/AdminPriv.) and install
+#
+# Usage:
+#   InstallSoftware ('with administrator privileges')
+#                                   - when Need to Restart/AdminPriv. to install
+#   InstallSoftware ()              - when Not Need to Restart to install
+#
+# Reference:
+#   Messages/Variables 
+#    1. MesReqRestart : Message when there is an update that needs to be restarted
+#    2. MesNoRestart  : Message when there is an update that Not needs to be restarted
+#    3. MesFinishInstall : Message when finished install
+#
+#
 
 function InstallSoftware ()
 {
+
+
 MesReqRestart="ITサポートチームです
 
 重要なソフトウエアアップデートがあります
@@ -89,63 +120,56 @@ MesNoRestart="ITサポートチームです
 
 "
 MesFinishInstall="アップデートが終了しました
-
 ご協力ありがとうございました
 ITサポートチーム(tel.xxx-xxxx-xxxx)
 
 
 "
 
-## Change messages by argument
-[ -z "$1" ] && Mes="$MesNoRestart" || Mes="$MesReqRestart"
+# Change Message by argument
+[ -z "$1" ] && Mes="$MesNoRestart" || Mes="$MesReqRestart" ## Change Message by argument
 
 
-## Display FinderDialog (Caution Dialog)
+# Display FinderDialog (Caution Dialog)
 AnswerOfCautionDiag=`osascript <<-EOD &>/dev/null && echo OK || echo Cancel
 tell application "System Events" to display dialog "$Mes" with icon 0
 EOD`
 
 
-## OK or Cancel (Caution Dialog)
-## Cancel 
+# Cancel or OK(Caution Dialog)
+# Cancel 
 [ "$AnswerOfCautionDiag" = "Cancel" ] &&
 SendToLog "Cancel AppleSoftwareUpdates by User" ||
 
-## OK
-## Restart or Not
-## Need to Restart
+# OK
+# Need to Restart or Not
+# Need to Restart --> Display FinderDialog (Auth/AdminPriv.) and install
 if [ "$1" = "with administrator privileges" ]; then
     SendToLog "Start Updates with Restart"
-    AnswerOfAdminDiag=`osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $@
-EOD`
-
-## Cancel  (AdminPriv.)
+    AnswerOfAdminDiag=$(
+        osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+            do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $@
+EOD
+)
     [ "$AnswerOfAdminDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
-## OK  (AdminPriv.) and Finish install
     [ "$AnswerOfAdminDiag" = "OK" ] && SendToLog "Finish AppleSoftwareUpdates (and restart)"
 
-
-
-## Not Need to Restart
+# Not Need to Restart
   elif [ "$1" = "" ]; then
     SendToLog "Start Updates WITHOUT Restart"
     osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-do shell script "softwareupdate -ia --include-config-data 2>/dev/null"
+        do shell script "softwareupdate -ia --include-config-data 2>/dev/null"
 EOD
-
     SendToLog "Finish AppleSoftwareUpdates" &&
-    osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
+    osascript <<-EOD
+        tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
 EOD
 
-
-
-else
+  else
     echo "something wrong!"
 fi
-
 }
+
 ##################### End of Set Functions / InstallSotware() ######################
 
 
@@ -153,27 +177,20 @@ fi
 
 
 #########################  Set Variables  ##############################
-##
-## UpdatesReply :           Reply of softwareupdate -l --include-config-data
-## InstallReqSoftwares :    List of SoftwareNames /all Requested
-## RecommendedSoftwares :   List of SoftwareNames etc./Recommended
-## NeedToRestartSoftwares : List of SoftwareNames etc./Need to Restart
-## NumOfSoftwares:          Number of Software to install /all Requested
-##
-## -----
-## ref.
-##  UpdatesFlag : Yes or No - Is there Updater or not
-##  RestartFlag : Yes or No - Neet to Restart or not
-##
-##
+#
+#  Variables by Update-command ---
+#   1.UpdatesReply           : raw commnd-reply data
+#   2.InstallReqSoftwares    : All Install/Update Software
+#   3.RecommendedSoftwares   : Recommended Install/Update Software
+#   4.NeedToRestartSoftwares : Need to Restart Install/Update Software
+#   5.NumOfSoftwares:          Number of All Install/Update Software
+#   6.UpdatesFlag [Yes/No]   : Is there Updater or not
+#   7,RestartFlag [Yes/No]   : Neet to Restart or not
+#
+#
 
-#UpdatesReply=$(softwareupdate -l)
+#UpdatesReply=$(softwareupdate -l)  # before macOS 10.13.x
 UpdatesReply=$(softwareupdate -l --include-config-data)
-
-
-# for debug
-echo "$UpdatesReply" 
-
 
 # Extract SoftwareName from softwareupdate -l --include-config-data
 InstallReqSoftwares=$(
@@ -185,30 +202,29 @@ InstallReqSoftwares=$(
   grep -v "*" |
   sed -e 's/^.//g'
 )
-
-NumOfSoftwares=$( echo "$InstallReqSoftwares" |grep -cv '^$' )
-
-
 RecommendSoftwares=$(echo "$UpdatesReply" | grep recommended)
 NeedToRestartSoftwares=$(echo "$UpdatesReply" | grep restart)
+NumOfSoftwares=$( echo "$InstallReqSoftwares" |grep -cv '^$' )
 
 [ -z "$RecommendSoftwares" ] && UpdatesFlag="No" || UpdatesFlag="Yes"
 [ -z "$NeedToRestartSoftwares" ] && RestartFlag="No" || RestartFlag="Yes"
 
 #for debug
+echo -e "UpdatesReply:\n""$UpdatesReply" 
 echo "UpdatesFlag: " $UpdatesFlag
 echo "RestartFlag: " $RestartFlag
 echo "Num of Updates: " $NumOfSoftwares
 echo -e "Install Software(s):\n" $InstallReqSoftwares
 
-########################  End Variables Set  #########################
+########################  End of Set Variables #########################
+
 
 
 
 
 
 ########################    Processing     ##########################
-##
+
 
 if [ -z "$InstallReqSoftwares" ]; then
     echo "No AppleSoftwareUpdaters"
@@ -226,7 +242,6 @@ if [ -z "$InstallReqSoftwares" ]; then
     SendToLog "AppleSoftwareUpdaters are found"
     SendToLog "Num of Updates: ""$NumOfSoftwares"
     SendToLog "$( echo "$InstallReqSoftwares" | tr '\n' '; ')"
-#    SendToLog "$InstallReqSoftwares"
     InstallSoftware
 
   else
