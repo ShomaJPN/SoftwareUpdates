@@ -87,49 +87,57 @@ echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
 #                                   - when Need to Restart/AdminPriv. to install
 #   InstallSoftware ()              - when Not Need to Restart to install
 #
+# Should be implemented in the future:
+#  -Timeout processing (when user do nothing)
+#    - OnlyIn "System Events" tell block
+#      - close dialog time (giving up after xx)
+#      - then kill process script (with timeout of 500 seconds) 
+#
 #
 
 function InstallSoftware ()
 {
 
 # Change Message by argument
-[ -z "$1" ] && Mes="$MesNoRestart" || Mes="$MesReqRestart" ## Change Message by argument
+[ -z "$1" ] && Mes="$MesNoRestart" || Mes="$MesReqRestart"
 
-
-# Display FinderDialog (Caution Dialog)
-AnswerOfCautionDiag=`osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-tell application "System Events" to display dialog "$Mes" with icon 0
-EOD`
-
-# Reply (Caution Dialog) is OK -> Display FinderDialog -> Install
-# Need to Restart
-[ "$AnswerOfCautionDiag" = "OK" ] &&
-if [ "$1" = "with administrator privileges" ]; then
-    SendToLog "Start Updates with Restart"
-    AnswerOfAdminDiag=$(
-        osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-            do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $@
+# Set Reply and display dialog 
+ReplyOfCautionDiag=$(
+osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+    tell application "System Events" to display dialog "$Mes" with icon 0
 EOD
 )
-    [ "$AnswerOfAdminDiag" = "OK" ] && SendToLog "Finish AppleSoftwareUpdates (and restart)"
-    [ "$AnswerOfAdminDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
+
+# Reply is Cancel
+[ "$ReplyOfCautionDiag" = "Cancel" ]       &&
+SendToLog "Cancel AppleSoftwareUpdates by User"
+
+# Reply is OK
+[ "$ReplyOfCautionDiag" = "OK" ]           &&
+
+# Need to Restart
+[ "$1" = "with administrator privileges" ] &&
+SendToLog "Start Updates with Restart"     &&
+ReplyOfAdminDiag=$(
+osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $@
+EOD
+)
+[ "$ReplyOfAdminDiag" = "OK" ]             &&
+SendToLog "Finish AppleSoftwareUpdates (and restart)" 
+[ "$ReplyOfAdminDiag" = "Cancel" ]         &&
+SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
 
 # Not Need to Restart
-  elif [ "$1" = "" ]; then
-    SendToLog "Start Updates WITHOUT Restart"
-    osascript <<-EOD &>/dev/null
-        do shell script "softwareupdate -ia --include-config-data 2>/dev/null"
+[ -z "$1" ]                                &&
+SendToLog "Start Updates WITHOUT Restart"  &&
+osascript <<-EOD &>/dev/null               &&
+do shell script "softwareupdate -ia --include-config-data 2>/dev/null"
 EOD
-    SendToLog "Finish AppleSoftwareUpdates" &&
-    osascript <<-EOD
-        tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
+SendToLog "Finish AppleSoftwareUpdates"    &&
+osascript <<-EOD &>/dev/null
+tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
 EOD
-
-fi
-
-# Reply (Caution Dialog) is Cancel
-[ "$AnswerOfCautionDiag" = "Cancel" ] &&
-SendToLog "Cancel AppleSoftwareUpdates by User"
 
 }
 
@@ -151,8 +159,8 @@ SendToLog "Cancel AppleSoftwareUpdates by User"
 #   7,RestartFlag [Yes/No]   : Neet to Restart or not
 #
 #  Messages --- 
-#   1. MesReqRestart    : Message when there is an update that needs to be restarted
-#   2. MesNoRestart     : Message when there is an update that Not needs to be restarted
+#   1. MesReqRestart    : Message when there is update that needs to be restarted
+#   2. MesNoRestart     : Message when there is update that Not needs to be restarted
 #   3. MesFinishInstall : Message when finished install
 #
 #
