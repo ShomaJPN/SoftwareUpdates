@@ -1,11 +1,12 @@
 #!/bin/bash
 ##
-## CheckAndChange_AppleSWUpdatePolicies.sh
-## Created by SHOMA on 4/22/2019. Last edited by SHOMA 5/9/2019
+## Name: 
+##  CheckAndChange_AppleSWUpdatePolicies.sh
+##  Created by SHOMA on 4/22/2019. Last edited by SHOMA 5/9/2019
 ##
 ## Overview:
-##  Check AppleSystemUpdate policy, and if need, Display FinderDialog to change.
-##  (Touch ID compatible)
+##  Check AppleSystemUpdate policy, Show FinderDialog to change if necessary
+##  Touch ID compatible
 ##
 ## Discription:
 ##  This script is made to realize UserReminderService , and promote 
@@ -120,9 +121,9 @@ ChgPolicyItems=$(
 NumOfChgPolicyItems=$( echo "$ChgPolicyItems" | awk -F ',' '{print NF}' ) 
 
 #for debug
-echo "Cmd : "$ChgPolicyCmd
-echo "Items : "$ChgPolicyItems
-echo "Num : "$NumOfChgPolicyItems
+echo "ChgPolicyCmd : "$ChgPolicyCmd
+echo "ChgPolicyItems : "$ChgPolicyItems
+echo "NumOfChgPolicyItems: "$NumOfChgPolicyItems
 
 # FinderDialog's Message (CautionDialog)
 MesCautionToChange="ITサポートチームです
@@ -142,34 +143,39 @@ MesCautionToChange="ITサポートチームです
 
 
 
-####################################### Progress #############################################
+####################################### Processing #############################################
 
 SendToLog "AppleSoftwareUpdate Check Started"
 
-[ -z "$ChgPolicyCmd" ] &&
-SendToLog "AppleSoftuareUpdate Policies seems good"
+[ -z "$ChgPolicyCmd" ] &&              # No Need to Change -> exit
+SendToLog "AppleSoftuareUpdate Policies seems good" &&
+exit 0
 
-[ ! -z "$ChgPolicyCmd" ] &&
+[ ! -z "$ChgPolicyCmd" ] &&            # Need to Change
 SendToLog "AppleSoftwareUpdate Policits to be changed are found" &&
 SendToLog "Num of changes : ""$NumOfChgPolicyItems" &&
 SendToLog "$ChgPolicyItems" &&
 
-AnswerCautionReply=`osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
+AnswerCautionReply=$(                  # Set Reply and Display dialog
+osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
 tell application "System Events" to display dialog "$MesCautionToChange" with icon 0
-EOD`
-
-if [ "$AnswerCautionReply" = "OK" ] ; then
-    AnswerAdminPriv=$(
-        osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-        do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
 EOD
 )
-    [ "$AnswerAdminPriv" = "OK" ] && SendToLog "AppleSoftwareUpdates Policies are Changed"
-    [ "$AnswerAdminPriv" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)"
 
-  elif [ "$AnswerCautionReply" = "Cancel" ] ; then
-    SendToLog "Cancel AppleSoftwareUpdates Policites change by User"
+[ "$AnswerCautionReply" = "Cancel" ] && # Reply is Cancel -> exit
+SendToLog "Cancel AppleSoftwareUpdates Policites change by User" &&
+exit 0
 
-fi 
+[ "$AnswerCautionReply" = "OK" ] &&    # Reply is OK
+AnswerAdminReply=$(                    # Set Reply and Display dialog (AdminPriv.) then Change 
+osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+    do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
+EOD
+)
+                                       # and Logging..
+[ "$AnswerAdminReply" = "OK" ] && SendToLog "AppleSoftwareUpdates Policies are Changed"
+[ "$AnswerAdminReply" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)"
+
+
 
 
