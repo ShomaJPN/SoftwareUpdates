@@ -18,7 +18,8 @@
 ##  -Test under macOS 10.14.4
 ##
 ## Install and Run:
-##  - Copy this script to the appropriate directory (ex.~/Script),and set it Excutable.
+##  - Copy this script to the appropriate directory (ex.~/Script)
+##    and set it Excutable.
 ##  - Use with launchd/lauchctl
 ##   - Make commnad-plist file and put it ~/Library/LaunchAgents/
 ##    - Start with the following command (only the first time)
@@ -29,18 +30,18 @@
 ##       　Remove plist from ~/Library/LaunchAgents/
 ##    - Check is ...
 ##       　launchctl list
-##  - A confirmation dialog (xxx would like to control "System Events"...) appear
-##    at the first run, then push allow button.  
+##  - A confirmation dialog (xxx would like to control "System Events"...)
+##    appear at the first run, then push allow button.  
 ## 
 ## References:
 ##  If you did not confirm by mistake, try "$ tccutil reset AppleEvents"
 ##  
 ##  Update-policies's plist
 ##
-##    /Library/Preferences/com.apple.commerce.plist <-- Mac App Store's Update Policy
+##  /Library/Preferences/com.apple.commerce.plist <- MacAppStore's Update Policy
 ##      AutoUpdate
 ##
-##    /Library/Preferences/com.apple.SoftwareUpdate.plist <-- macOS's SoftwareUpdate Policy
+##  /Library/Preferences/com.apple.SoftwareUpdate.plist <- macOS's Update Policy
 ##      AutomaticCheckEnaled
 ##      AutomaticDownload
 ##      AutomaticallyInstallMacOSUpdtes
@@ -53,7 +54,9 @@
 
 
 
-################### Set "Log" file and function  ######################
+
+
+######################## Set "Log" file and function ###########################
 
 LogPath=$HOME/log
 LogFile="$LogPath/CheckPolicySoftwareUpdateApple.log"
@@ -71,12 +74,13 @@ function SendToLog ()
 echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
 }
 
-################ End of set "Log" file and function ################
+##################### End of set "Log" file and function #######################
 
 
 
 
-############################### Set Variables ####################################
+
+############################## Set Variables ###################################
 #
 #   1. ChgPolityCmd            : raw change-policy command
 #   2. ChgPolicyItems          : All items of change-policy
@@ -84,33 +88,39 @@ echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
 #   4. MesCautionToChange      : FinderDialog's messages (CautionDialog)
 #
 
-# ChgPolicyCmd 
-[ "$( defaults read /Library/Preferences/com.apple.commerce.plist |grep "AutoUpdate =" |grep 0 )" ] &&
-ChgPolicyCmd="defaults write /Library/Preferences/com.apple.commerce.plist AutoUpdate -int 1" 
+# ChgPolicyCmd
 
-[ "$( defaults read /Library/Preferences/com.apple.SoftwareUpdate.plist | grep AutomaticCheckEnabled |grep 0 )" ] &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;" &&
-ChgPolicyCmd=$ChgPolicyCmd"defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist AutomaticCheckEnabled -int 1"
+GetUpPolCmdMAS="defaults read /Library/Preferences/com.apple.commerce.plist"
+SetUpPolCmdMAS="defaults write /Library/Preferences/com.apple.commerce.plist"
+GetUpPolCmdAp="defaults read /Library/Preferences/com.apple.SoftwareUpdate.plist"
+SetUpPolCmdAp="defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist"
 
-[ "$( defaults read /Library/Preferences/com.apple.SoftwareUpdate.plist | grep AutomaticDownload |grep 0 )" ] &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;" &&
-ChgPolicyCmd=$ChgPolicyCmd"defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist AutomaticDownload -int 1"
+[ "$( echo $GetUpPolCmdMAS | sh | grep 'AutoUpdate =' |grep 0 )" ]             &&
+ChgPolicyCmd=$SetUpPolCmdMAS" AutoUpdate -int 1" 
 
-[ "$( defaults read /Library/Preferences/com.apple.SoftwareUpdate.plist | grep AutomaticallyInstallMacOSUpdates |grep 0 )" ] &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;" &&
-ChgPolicyCmd=$ChgPolicyCmd"defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist AutomaticallyInstallMacOSUpdates -int 1"
+[ "$( echo $GetUpPolCmdAp | sh | grep AutomaticCheckEnabled |grep 0 )" ]       &&
+[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"                     &&
+ChgPolicyCmd=$ChgPolicyCmd$SetUpPolCmdAp" AutomaticCheckEnabled -int 1"
 
-[ "$( defaults read /Library/Preferences/com.apple.SoftwareUpdate.plist | grep ConfigDataInstal |grep 0 )" ] &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;" &&
-ChgPolicyCmd=$ChgPolicyCmd"defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist ConfigDataInstall -int 1"
+[ "$( echo $GetUpPolCmdAp | sh | grep AutomaticDownload |grep 0 )" ]           &&
+[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"                     &&
+ChgPolicyCmd=$ChgPolicyCmd$SetUpPolCmdAp" AutomaticDownload -int 1"
 
-[ "$( defaults read /Library/Preferences/com.apple.SoftwareUpdate.plist | grep CriticalUpdateInstal |grep 0 )" ] &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;" &&
-ChgPolicyCmd=$ChgPolicyCmd"defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist CriticalUpdateInstall -int 1"
+[ "$( echo $GetUpPolCmdAp | sh | grep AutomaticallyInstall |grep 0 )" ]        &&
+[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"                     &&
+ChgPolicyCmd=$ChgPolicyCmd$SetUpPolCmdAp" AutomaticallyInstallMacOSUpdates -int 1"
+
+[ "$( echo $GetUpPolCmdAp | sh | grep ConfigDataInstal |grep 0 )" ]            &&
+[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"                     &&
+ChgPolicyCmd=$ChgPolicyCmd$SetUpPolCmdAp" ConfigDataInstall -int 1"
+
+[ "$( echo $GetUpPolCmdAp | sh | grep CriticalUpdateInstal |grep 0 )" ]        &&
+[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"                     &&
+ChgPolicyCmd=$ChgPolicyCmd$SetUpPolCmdAp" CriticalUpdateInstall -int 1"
 
 # ChgPolicyItems: extract all Items from ChgPolicyCmd
 ChgPolicyItems=$(
-  echo "$ChgPolicyCmd" |
+  echo "$ChgPolicyCmd"  |
   sed -e 's/defaults write \/Library\/Preferences\/com.apple.commerce.plist //g' |
   sed -e 's/defaults write \/Library\/Preferences\/com.apple.SoftwareUpdate.plist //g' |
   sed -e 's/ -int 1//g' |
@@ -137,44 +147,54 @@ MesCautionToChange="ITサポートチームです
 
 "
 
-############################### End of Set Variables ####################################
+######################### End of Set Variables #################################
 
 
 
 
 
-####################################### Processing #############################################
+############################### Processing #####################################
 
 SendToLog "AppleSoftwareUpdate Check Started"
 
-[ -z "$ChgPolicyCmd" ] &&              # No Need to Change -> exit
-SendToLog "AppleSoftuareUpdate Policies seems good" &&
+# No Need to Change -> exit
+[ -z "$ChgPolicyCmd" ]                                           &&
+SendToLog "AppleSoftuareUpdate Policies seems good"              &&
 exit 0
 
-[ ! -z "$ChgPolicyCmd" ] &&            # Need to Change
+# Need to Change
+[ ! -z "$ChgPolicyCmd" ]                                         &&
 SendToLog "AppleSoftwareUpdate Policits to be changed are found" &&
-SendToLog "Num of changes : ""$NumOfChgPolicyItems" &&
-SendToLog "$ChgPolicyItems" &&
+SendToLog "Num of changes : ""$NumOfChgPolicyItems"              &&
+SendToLog "$ChgPolicyItems"                                      &&
 
-ReplyOfCautionDiag=$(                  # Set Reply and Display dialog
+# Set Reply and Display dialog
+ReplyOfCautionDiag=$(
 osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
 tell application "System Events" to display dialog "$MesCautionToChange" with icon 0
 EOD
 )
 
-[ "$ReplyOfCautionDiag" = "Cancel" ] && # Reply is Cancel -> exit
+# Reply is Cancel -> exit
+[ "$ReplyOfCautionDiag" = "Cancel" ]                             &&
 SendToLog "Cancel AppleSoftwareUpdates Policites change by User" &&
 exit 0
 
-[ "$ReplyOfCautionDiag" = "OK" ] &&    # Reply is OK
-ReplyOfAdminDiag=$(                    # Set Reply and Display dialog (AdminPriv.) then Change 
+# Reply is OK
+[ "$ReplyOfCautionDiag" = "OK" ]                                 &&
+
+# Set Reply and Display dialog (AdminPriv.) then Change 
+ReplyOfAdminDiag=$(
 osascript <<-EOD &>/dev/null && echo OK || echo Cancel
     do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
 EOD
 )
-                                       # and Logging..
-[ "$ReplyOfAdminDiag" = "OK" ] && SendToLog "AppleSoftwareUpdates Policies are Changed"
-[ "$ReplyOfAdminDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)"
+
+# and Logging..
+[ "$ReplyOfAdminDiag" = "OK" ]                                  &&
+SendToLog "AppleSoftwareUpdates Policies are Changed"
+[ "$ReplyOfAdminDiag" = "Cancel" ]                              &&
+SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)"
 
 
 

@@ -5,7 +5,7 @@
 ##  Created by SHOMA on 4/18/2019. Last edited by SHOMA 5/9/2019
 ##
 ## Overview:
-##  Check AppleSystem Updates ,and if present, Display FinderDialog to install.
+##  Check AppleSystem Updates ,and if present, Display Dialog to install
 ##  (Touch ID compatible)
 ##
 ## Discription:
@@ -18,7 +18,8 @@
 ##  -Test under macOS 10.14.4
 ##
 ## Install and Run:
-##  - Copy this script to the appropriate directory (ex.~/Script),and set it Excutable.
+##  - Copy this script to the appropriate directory (ex.~/Script)
+##    and set it Excutable.
 ##  - Use with launchd/lauchctl
 ##   - Make commnad-plist file and put it ~/Library/LaunchAgents/
 ##    - Start with the following command (only the first time)
@@ -29,16 +30,16 @@
 ##       　Remove plist from ~/Library/LaunchAgents/
 ##    - Check is ...
 ##       　launchctl list
-##  - A confirmation dialog (xxx would like to control "System Events"...) appear
-##    at the first run, then push allow button.  
+##  - A confirmation dialog (xxx would like to control "System Events"...)
+##    appear at the first run, then push allow button.  
 ## 
 ## References:
 ##  If you did not confirm by mistake, try "$ tccutil reset AppleEvents"
 ##  
 ##  /usr/sbin/softwareupdate
-##    -l                       : List all available updates
-##    -ia                      : Install All updates without GateKeeper & XProtect data
-##       --include-config-data : ..including GateKeeper & XProtect data
+##   -l　                    : List all available updates
+##   -ia                     : Install all updates /WO GateKeeper & XProtectData
+##     --include-config-data : ..including GateKeeper & XProtect data
 ##
 ##  "--include-config-data" is using ONLY after macOS 10.13.x
 ##
@@ -50,7 +51,7 @@
 
 
 
-################### Set "Log" file and function  ######################
+######################## Set "Log" file and function ###########################
 
 LogPath=$HOME/log
 LogFile="$LogPath/SoftwareUpdatesApple.log"
@@ -68,13 +69,13 @@ function SendToLog ()
 echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
 }
 
-################ End of set "Log" file and function ################
+##################### End of set "Log" file and function #######################
 
 
 
 
 
-##################### Set Functions /InstallSoftware() ########################
+##################### Set Functions /InstallSoftware() #########################
 #
 # Name:
 #   function InstallSoftware ()
@@ -108,46 +109,48 @@ osascript <<-EOD &>/dev/null && echo OK || echo Cancel
 EOD
 )
 
-# Reply is Cancel
-[ "$ReplyOfCautionDiag" = "Cancel" ]       &&
-SendToLog "Cancel AppleSoftwareUpdates by User"
+# Reply is Cancel --> exit
+[ "$ReplyOfCautionDiag" = "Cancel" ]            &&
+SendToLog "Cancel AppleSoftwareUpdates by User" &&
+exit 0
 
 # Reply is OK
-[ "$ReplyOfCautionDiag" = "OK" ]           &&
+[ "$ReplyOfCautionDiag" = "OK" ]                &&
 
-# Need to Restart
-[ "$1" = "with administrator privileges" ] &&
-SendToLog "Start Updates with Restart"     &&
-ReplyOfAdminDiag=$(
-osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $@
+if [ "$1" = "with administrator privileges" ] ; then # Need to Restart
+    SendToLog "Start Updates with Restart"
+                                                    # Set Reply and
+    ReplyOfAdminDiag=$(                             # display dialog then install
+      osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+        do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $1
 EOD
 )
-[ "$ReplyOfAdminDiag" = "OK" ]             &&
-SendToLog "Finish AppleSoftwareUpdates (and restart)" 
-[ "$ReplyOfAdminDiag" = "Cancel" ]         &&
-SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
+    [ "$ReplyOfAdminDiag" = "OK" ]              &&
+    SendToLog "Finish AppleSoftwareUpdates (and restart)"
+    [ "$ReplyOfAdminDiag" = "Cancel" ]          &&
+    SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
 
-# Not Need to Restart
-[ -z "$1" ]                                &&
-SendToLog "Start Updates WITHOUT Restart"  &&
-osascript <<-EOD &>/dev/null               &&
-do shell script "softwareupdate -ia --include-config-data 2>/dev/null"
+  elif [ -z "$1" ] ; then                            # No Need to Restart
+    SendToLog "Start Updates WITHOUT Restart"
+    osascript <<-EOD &>/dev/null                     # install
+        do shell script "softwareupdate -ia --include-config-data 2>/dev/null"
 EOD
-SendToLog "Finish AppleSoftwareUpdates"    &&
-osascript <<-EOD &>/dev/null
-tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
+    SendToLog "Finish AppleSoftwareUpdates"
+    osascript <<-EOD &>/dev/null
+        tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
 EOD
+
+fi
 
 }
 
-##################### End of Set Functions / InstallSotware() ######################
+################# End of Set Functions / InstallSotware() ######################
 
 
 
 
 
-#########################  Set Variables  ##############################
+############################### Set Variables ##################################
 #
 #  Variables by Update-command ---
 #   1.UpdatesReply           : raw commnd-reply data
@@ -159,9 +162,9 @@ EOD
 #   7,RestartFlag [Yes/No]   : Neet to Restart or not
 #
 #  Messages --- 
-#   1. MesReqRestart    : Message when there is update that needs to be restarted
-#   2. MesNoRestart     : Message when there is update that Not needs to be restarted
-#   3. MesFinishInstall : Message when finished install
+#   1.MesReqRestart    : Message when there is update that needs to restart
+#   2.MesNoRestart     : Message when there is update htat Not needs to restart
+#   3.MesFinishInstall : Message when finished install
 #
 #
 
@@ -220,15 +223,15 @@ ITサポートチーム(tel.xxx-xxxx-xxxx)
 
 "
 
-########################  End of Set Variables #########################
+############################  End of Set Variables #############################
 
 
 
 
 
+################################# Processing ###################################
 
-########################    Processing     ##########################
-
+SendToLog "AppleSoftwareUpdate Check Started"
 
 if [ -z "$InstallReqSoftwares" ]; then
     echo "No AppleSoftwareUpdaters"
