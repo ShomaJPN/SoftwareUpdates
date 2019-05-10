@@ -20,10 +20,10 @@ Suitable for organizations that encourage users to act, may be ..
 Excute these ShellScripts with launchctl / launchd.
 - CheckAndChange_AppleSWUpdatePolicies.sh   <-- AppleSoftware Policy check and change script
 - AppleSoftwareUpdate.sh                    <-- AppleSoftware update script  
-
+  
 - CheckAndChange_MSOfficeUpdatePolicies.sh  <-- MS Office Policy check and change script
-- MSSoftwareUpdate.sh                       <-- MS Office update script
-
+- MSSoftwareUpdate.sh                       <-- MS Office update script  
+  
 - com.myOrganization.cmd.plist              <-- Sample /command plist file
 
 ## Install and Run
