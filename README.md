@@ -21,12 +21,16 @@ Excute these ShellScripts with launchctl / launchd.
 - CheckAndChange_AppleSWUpdatePolicies.sh   <-- AppleSoftware Policy check and change script
 - AppleSoftwareUpdate.sh                    <-- AppleSoftware update script  
 
-- com.myOrganization.cmd.plist              <-- Sample /command plist file.
+- CheckAndChange_MSOfficeUpdatePolicies.sh  <-- MS Office Policy check and change script
+- MSSoftwareUpdate.sh                       <-- MS Office update script
+
+- com.myOrganization.cmd.plist              <-- Sample /command plist file
 
 ## Install and Run
 Put ShellScripts to the appropriate directory  `(ex.~/Script)`  , then set execute permissions.  
 Make or change command plist file according to your environment , then put it to the appropriate directory. `(ex.~/Library/LaunchAgents)`  
 A confirmation dialog (xxx would like to control "System Events"...) appear only once at the first run ,then allow it (in the case of Mojave )  
+![TCC_fig](https://user-images.githubusercontent.com/49780970/57506250-3cfaac00-7336-11e9-9cc7-019c04ea0f3c.jpg)  
 If you did not allow for confirmation by mistake, try `$ tccutil reset AppleEvents`  
 
 Start with the following command (only the first time)  
