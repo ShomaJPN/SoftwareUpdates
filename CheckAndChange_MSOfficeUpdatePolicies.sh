@@ -62,7 +62,7 @@ fi
 
 function SendToLog ()
 {
-echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
+echo $(date +"%Y-%m-%d %T") : $@ | tee -a "$LogFile"
 }
 
 ##################### End of set "Log" file and function #######################
@@ -105,29 +105,22 @@ MS Officeソフトウエアアップデート設定が自動設定になって�
 
 SendToLog "MSOfficeUpdate policy check Started"
 
-# No Need to Change -> exit
-[ -z "$ChgPolicyCmdMS" ]                            &&
+[ -z "$ChgPolicyCmdMS" ]                            && # No Need to Change -> exit
  SendToLog "MSOfficeUpdate Policy seems good"       &&
  exit 0
 
-
-# Need to Change
-[ ! -z "$ChgPolicyCmdMS" ]                          &&
- SendToLog "MSOfficeUpdate Policy shuld be changed" &&
-
-# Set Reply and display dialog
-ReplyOfCaution=$( osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
-    tell application "System Events" to display dialog "$MesCautionToChgPolicyMS" with icon 0
+[ ! -z "$ChgPolicyCmdMS" ]                          && # Need to Change
+ SendToLog "MSOfficeUpdate Policy shuld be changed" && # Set Reply and display dialog
+ ReplyOfCaution=$( osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
+ tell application "System Events" to display dialog "$MesCautionToChgPolicyMS" with icon 0
 EOD
 )
 
-# Reply is Cancel -> exit
-[ "$ReplyOfCaution" = "Cancel" ]                    &&
+[ "$ReplyOfCaution" = "Cancel" ]                    && # Reply is Cancel -> exit
  SendToLog "Cancel MSOfficeUpdates Policites change by User" &&
  exit 0
 
-# Reply is OK -> Change
-[ "$ReplyOfCaution" = "OK" ]                        &&
+[ "$ReplyOfCaution" = "OK" ]                        && # Reply is OK -> Change
  echo "$ChgPolicyCmdMS" | sh                        &&
  SendToLog "MSOfficeUpdate Policies are Changed" 
 
