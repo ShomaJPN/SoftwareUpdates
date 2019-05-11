@@ -66,7 +66,7 @@ fi
 
 function SendToLog ()
 {
-echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
+echo $(date +"%Y-%m-%d %T") : $@ | tee -a "$LogFile"
 }
 
 ##################### End of set "Log" file and function #######################
@@ -105,7 +105,7 @@ function InstallSoftware ()
 # Set Reply and display dialog 
 ReplyOfCautionDiag=$(
 osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-    tell application "System Events" to display dialog "$Mes" with icon 0
+tell application "System Events" to display dialog "$Mes" with icon 0
 EOD
 )
 
@@ -117,8 +117,8 @@ EOD
 [ "$ReplyOfCautionDiag" = "OK" ]     &&
 
 if [ "$1" = "with administrator privileges" ] ; then # Need to Restart
-    SendToLog "Start Updates with Restart"          # Set Reply and display dialog
-    ReplyOfAdminDiag=$(                             # to install /w AdminPriv
+    SendToLog "Start Updates with Restart"           # Set Reply and display dialog
+    ReplyOfAdminDiag=$(                              # to install /w AdminPriv
     osascript <<-EOD &>/dev/null && echo OK || echo Cancel
     do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $1
 EOD
