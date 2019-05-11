@@ -71,7 +71,7 @@ fi
 
 function SendToLog ()
 {
-echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
+echo $(date +"%Y-%m-%d %T") : $@ | tee -a "$LogFile"
 }
 
 ##################### End of set "Log" file and function #######################
@@ -168,7 +168,7 @@ SendToLog "AppleSoftwareUpdate Check Started"
 
  ReplyOfCautionDiag=$(                              # Set Reply and Display dialog
  osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
-    tell application "System Events" to display dialog "$MesCautionToChange" with icon 0
+ tell application "System Events" to display dialog "$MesCautionToChange" with icon 0
 EOD
 )
 
@@ -179,14 +179,12 @@ EOD
 [ "$ReplyOfCautionDiag" = "OK" ] &&                 # Reply is OK
  ReplyOfAdminDiag=$(                                # Set Reply and Display dialog (AdminPriv.) then Change 
  osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-    do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
+ do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
 EOD
 )
-
-[ "$ReplyOfAdminDiag" = "OK" ] &&                   # and Logging..
- SendToLog "AppleSoftwareUpdates Policies are Changed"
-[ "$ReplyOfAdminDiag" = "Cancel" ] &&
- SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)"
+                                                    # Logging..
+[ "$ReplyOfAdminDiag" = "OK" ] && SendToLog "AppleSoftwareUpdates Policies are Changed"
+[ "$ReplyOfAdminDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)"
 
 
 
