@@ -5,8 +5,7 @@ These Tiny Bash ShellScripts help to check SoftwareUpdate policies, and install 
 During Finder login , display FinderDialog to prompt for changing policy / installing if necessary. 
 If administrator privileges is required, it shows "Touch ID" dialog.
 Plese use with launchd / launchctl. (ex. check Every xx hours while logged in)  
-![Touch_ID](https://user-images.githubusercontent.com/49780970/57564827-d638c980-73ed-11e9-8787-e2cd82aed445.gif)
-
+![touchid](https://user-images.githubusercontent.com/49780970/57564890-c2419780-73ee-11e9-8085-e87d5961af8b.gif)
 ## Description
 This was made to realize UserRemind and promote Education to users that is not enough with push-service(MDM).  
 Suitable for organizations that encourage users to act, may be ..  
