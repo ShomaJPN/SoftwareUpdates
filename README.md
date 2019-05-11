@@ -1,10 +1,11 @@
 # SoftwareUpdates (macOS)
 
 ## Overview
-This Tiny Bash ShellScript help to check & change User's SoftwareUpdate policies, and install SoftwareUpdate.
-During Finder login time, Check and display FinderDialog to user for changing / installing.  
-Even if administrator privileges is reauired, execute using Touch ID or FinderDialg.
-Use with launchd / launchctl. (ex. check Every xx hours while logged in)  
+These Tiny Bash ShellScripts help to check SoftwareUpdate policies, and install SoftwareUpdate.
+During Finder login , display FinderDialog to prompt for changing policy / installing if necessary. 
+If administrator privileges is required, it shows "Touch ID" dialog.
+Plese use with launchd / launchctl. (ex. check Every xx hours while logged in)  
+![Touch_ID](https://user-images.githubusercontent.com/49780970/57564827-d638c980-73ed-11e9-8787-e2cd82aed445.gif)
 
 ## Description
 This was made to realize UserRemind and promote Education to users that is not enough with push-service(MDM).  
@@ -14,17 +15,22 @@ Suitable for organizations that encourage users to act, may be ..
 - Bash (for ShellScript)
   - osascript (for FinderDialog)
   - do shell script (for ShellScript /w osascript)
+
 - Tested under Mojave 10.14.4 (Confrim Dialog/TCC appear at the first run)
+- Tested under MS Office 365 /2019
 
 ## Usage
 Excute these ShellScripts with launchctl / launchd.
 - CheckAndChange_AppleSWUpdatePolicies.sh   <-- AppleSoftware Policy check and change script
 - AppleSoftwareUpdate.sh                    <-- AppleSoftware update script  
-  
+
+
 - CheckAndChange_MSOfficeUpdatePolicies.sh  <-- MS Office Policy check and change script
 - MSSoftwareUpdate.sh                       <-- MS Office update script  
-  
+
+
 - com.myOrganization.cmd.plist              <-- Sample /command plist file
+
 
 ## Install and Run
 Put ShellScripts to the appropriate directory  `(ex.~/Script)`  , then set execute permissions.  

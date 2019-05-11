@@ -109,35 +109,29 @@ osascript <<-EOD &>/dev/null && echo OK || echo Cancel
 EOD
 )
 
-# Reply is Cancel --> exit
-[ "$ReplyOfCautionDiag" = "Cancel" ]            &&
-SendToLog "Cancel AppleSoftwareUpdates by User" &&
-exit 0
+# Reply is Cancel
+[ "$ReplyOfCautionDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates by User"
+
 
 # Reply is OK
-[ "$ReplyOfCautionDiag" = "OK" ]                &&
+[ "$ReplyOfCautionDiag" = "OK" ]     &&
 
 if [ "$1" = "with administrator privileges" ] ; then # Need to Restart
-    SendToLog "Start Updates with Restart"
-                                                    # Set Reply and
-    ReplyOfAdminDiag=$(                             # display dialog then install
-      osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-        do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $1
+    SendToLog "Start Updates with Restart"          # Set Reply and display dialog
+    ReplyOfAdminDiag=$(                             # to install /w AdminPriv
+    osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+    do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $1
 EOD
 )
-    [ "$ReplyOfAdminDiag" = "OK" ]              &&
-    SendToLog "Finish AppleSoftwareUpdates (and restart)"
-    [ "$ReplyOfAdminDiag" = "Cancel" ]          &&
-    SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
+    [ "$ReplyOfAdminDiag" = "OK" ] && SendToLog "Finish AppleSoftwareUpdates (and restart)"
+    [ "$ReplyOfAdminDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
 
   elif [ -z "$1" ] ; then                            # No Need to Restart
     SendToLog "Start Updates WITHOUT Restart"
-    osascript <<-EOD &>/dev/null                     # install
-        do shell script "softwareupdate -ia --include-config-data 2>/dev/null"
-EOD
+    softwareupdate -ia --include-config-data
     SendToLog "Finish AppleSoftwareUpdates"
     osascript <<-EOD &>/dev/null
-        tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
+    tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
 EOD
 
 fi
@@ -153,7 +147,7 @@ fi
 ############################### Set Variables ##################################
 #
 #  Variables by Update-command ---
-#   1.UpdatesReply           : raw commnd-reply data
+#   1.ReplyOfUpdate           : raw commnd-reply data
 #   2.InstallReqSoftwares    : All Install/Update Software
 #   3.RecommendedSoftwares   : Recommended Install/Update Software
 #   4.NeedToRestartSoftwares : Need to Restart Install/Update Software
@@ -168,12 +162,12 @@ fi
 #
 #
 
-#UpdatesReply=$(softwareupdate -l)  # before macOS 10.13.x
-UpdatesReply=$(softwareupdate -l --include-config-data)
+#ReplyOfUpdate=$(softwareupdate -l)  # before macOS 10.13.x
+ReplyOfUpdate=$(softwareupdate -l --include-config-data)
 
 # Extract SoftwareName from softwareupdate -l --include-config-data
 InstallReqSoftwares=$(
-  echo "$UpdatesReply" |
+  echo "$ReplyOfUpdate" |
   grep -v "^$" |
   grep -v "Software Update Tool" |
   grep -v "Finding available software" |
@@ -181,15 +175,15 @@ InstallReqSoftwares=$(
   grep -v "*" |
   sed -e 's/^.//g'
 )
-RecommendSoftwares=$(echo "$UpdatesReply" | grep recommended)
-NeedToRestartSoftwares=$(echo "$UpdatesReply" | grep restart)
+RecommendSoftwares=$(echo "$ReplyOfUpdate" | grep recommended)
+NeedToRestartSoftwares=$(echo "$ReplyOfUpdate" | grep restart)
 NumOfSoftwares=$( echo "$InstallReqSoftwares" |grep -cv '^$' )
 
 [ -z "$RecommendSoftwares" ] && UpdatesFlag="No" || UpdatesFlag="Yes"
 [ -z "$NeedToRestartSoftwares" ] && RestartFlag="No" || RestartFlag="Yes"
 
 #for debug
-echo -e "UpdatesReply:\n""$UpdatesReply" 
+echo -e "ReplyOfUpdate:\n""$ReplyOfUpdate" 
 echo "UpdatesFlag: " $UpdatesFlag
 echo "RestartFlag: " $RestartFlag
 echo "Num of Updates: " $NumOfSoftwares

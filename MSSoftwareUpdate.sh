@@ -79,18 +79,24 @@ echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
 
 ############################### Set Variables ##################################
 #
+#  MS Office Update-commnad ---
+#      1.UpdateCmdMS           : MS Office Update command
+#      2.InstallCmdMS          : MS Office Update command to install
+#
 #  Variables by Update-command ---
-#      1.ReplyOfUpdateMS       : raw command-reply data
-#      2.InstallSoftwaresMS    : Install/Update Softwares
-#   　 3.NumOfSoftwareMS       : Number of Install/Update Softwares
+#      4.ReplyOfUpdateMS       : raw command-reply data
+#      5.InstallSoftwaresMS    : Install/Update Softwares
+#   　 6.NumOfSoftwareMS       : Number of Install/Update Softwares
 #
 #  Messages ---
-#      4.MesCautionToInstallMS : Message when there is update
+#      7.MesCautionToInstallMS : Message when there is update
 #
 #
 
-UpMSCmd="/Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app/Contents/MacOS/msupdate"
-ReplyOfUpdateMS=$( echo "$UpMSCmd"" -l" | sh )
+UpdateCmdMS="/Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app/Contents/MacOS/msupdate"
+InstallCmdMS="$UpdateCmdMS"" -i"
+
+ReplyOfUpdateMS=$( echo "$UpdateCmdMS"" -l" | sh )
 
 InstallSoftwaresMS=$(
  echo "$ReplyOfUpdateMS" |
@@ -102,14 +108,11 @@ InstallSoftwaresMS=$(
 
 NumOfSoftwareMS=$( echo "$InstallSoftwaresMS" | grep -cv '^$' )
 
-MSOfficeSwUpdateCmd=$( echo "$UpMSCmd"" -i" )
 
 #for debug
-echo "ReplyOfUpdateMS : " "$ReplyOfUpdateMS"
-echo "InstallSoftwaresMS :"
-echo "$InstallSoftwaresMS"
-echo "NumOfSoftwareMS : " "$NumOfSoftwareMS"
-echo "MSOfficeSwUpdateCmd: " "$MSOfficeSwUpdateCmd"
+echo -e "Reply of Update MS\n""$ReplyOfUpdateMS"
+echo -e "Install Software(s) MS:\n" $InstallSoftwaresMS
+echo "Num of Updates : " "$NumOfSoftwareMS"
 
 
 MesCautionToInstallMS="ITサポートチームです
@@ -141,7 +144,7 @@ ITサポートチーム(tel.xxx-xxxx-xxxx)
 
 SendToLog "MSOffice SoftwareUpdates check Started"
 
-# No Need to Change
+# No Need to Change -> exit
 [ -z "$InstallSoftwaresMS" ]                       &&
 SendToLog "MSOffice Softuare seems up to date"     &&
 exit 0
@@ -155,14 +158,14 @@ tell application "System Events" to display dialog "$MesCautionToInstallMS" with
 EOD
 )
 
-# Reply is Cancel
+# Reply is Cancel -> exit
 [ "$ReplyOfCautionDiag" = "Cancel" ]               &&
 SendToLog "Cancel MSOfficeSoftwareUpdates by User" &&
 exit 0
 
 # Reply is OK
 [ "$ReplyOfCautionDiag" = "OK" ]                   &&
-echo $MSOfficeSwUpdateCmd | sh                     &&
+echo $InstallCmdMS | sh                            &&
 SendToLog "MSOffice SoftwareUpdates are Finished"  &&
 osascript <<-EOD &>/dev/null
 tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2

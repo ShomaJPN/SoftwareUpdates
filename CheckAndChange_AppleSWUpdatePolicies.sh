@@ -157,44 +157,36 @@ MesCautionToChange="ITサポートチームです
 
 SendToLog "AppleSoftwareUpdate Check Started"
 
-# No Need to Change -> exit
-[ -z "$ChgPolicyCmd" ]                                           &&
-SendToLog "AppleSoftuareUpdate Policies seems good"              &&
-exit 0
+[ -z "$ChgPolicyCmd" ] &&                           # No Need to Change -> exit
+ SendToLog "AppleSoftuareUpdate Policies seems good" &&
+ exit 0
 
-# Need to Change
-[ ! -z "$ChgPolicyCmd" ]                                         &&
-SendToLog "AppleSoftwareUpdate Policits to be changed are found" &&
-SendToLog "Num of changes : ""$NumOfChgPolicyItems"              &&
-SendToLog "$ChgPolicyItems"                                      &&
+[ ! -z "$ChgPolicyCmd" ] &&                         # Need to Change
+ SendToLog "AppleSoftwareUpdate Policits to be changed are found" &&
+ SendToLog "Num of changes : ""$NumOfChgPolicyItems"              &&
+ SendToLog "$ChgPolicyItems"                                      &&
 
-# Set Reply and Display dialog
-ReplyOfCautionDiag=$(
-osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
-tell application "System Events" to display dialog "$MesCautionToChange" with icon 0
+ ReplyOfCautionDiag=$(                              # Set Reply and Display dialog
+ osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
+    tell application "System Events" to display dialog "$MesCautionToChange" with icon 0
 EOD
 )
 
-# Reply is Cancel -> exit
-[ "$ReplyOfCautionDiag" = "Cancel" ]                             &&
-SendToLog "Cancel AppleSoftwareUpdates Policites change by User" &&
-exit 0
+[ "$ReplyOfCautionDiag" = "Cancel" ] &&             # Reply is Cancel -> exit
+ SendToLog "Cancel AppleSoftwareUpdates Policites change by User" &&
+ exit 0
 
-# Reply is OK
-[ "$ReplyOfCautionDiag" = "OK" ]                                 &&
-
-# Set Reply and Display dialog (AdminPriv.) then Change 
-ReplyOfAdminDiag=$(
-osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+[ "$ReplyOfCautionDiag" = "OK" ] &&                 # Reply is OK
+ ReplyOfAdminDiag=$(                                # Set Reply and Display dialog (AdminPriv.) then Change 
+ osascript <<-EOD &>/dev/null && echo OK || echo Cancel
     do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
 EOD
 )
 
-# and Logging..
-[ "$ReplyOfAdminDiag" = "OK" ]                                  &&
-SendToLog "AppleSoftwareUpdates Policies are Changed"
-[ "$ReplyOfAdminDiag" = "Cancel" ]                              &&
-SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)"
+[ "$ReplyOfAdminDiag" = "OK" ] &&                   # and Logging..
+ SendToLog "AppleSoftwareUpdates Policies are Changed"
+[ "$ReplyOfAdminDiag" = "Cancel" ] &&
+ SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)"
 
 
 

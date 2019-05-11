@@ -73,16 +73,16 @@ echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
 
 ############################## Set Variables ###################################
 #
-#  1. MSOfficeUpdatePolicyCmd : MSOffice-UpdatePolicy Update command (raw)
+#  1. ChgPolicyCmdMS : MSOffice-UpdatePolicy Update command (raw)
 #  2. MesCautionToChgPolicyMS : FinderDialog's messages (CautionDialog)
 #
 
 
 [ "$( defaults read ~/Library/Preferences/com.microsoft.autoupdate2.plist |grep HowToCheck |grep -v AutomaticDownload )" ] &&
-MSOfficeUpdatePolicyCmd="defaults write ~/Library/Preferences/com.microsoft.autoupdate2.plist HowToCheck AutomaticDownload"
+ChgPolicyCmdMS="defaults write ~/Library/Preferences/com.microsoft.autoupdate2.plist HowToCheck AutomaticDownload"
 
 #for debug
-echo "MSOfficeUpdatePolicyCmd : ""$MSOfficeUpdatePolicyCmd"
+echo "ChgPolicyCmdMS : ""$ChgPolicyCmdMS"
 
 MesCautionToChgPolicyMS="ITサポートチームです
 
@@ -103,27 +103,31 @@ MS Officeソフトウエアアップデート設定が自動設定になって�
 
 ############################### Processing #####################################
 
-SendToLog "MSOfficeSoftwareUpdate policy check Started"
+SendToLog "MSOfficeUpdate policy check Started"
 
-[ -z "$MSOfficeUpdatePolicyCmd" ]               && # No Need to Change -> exit
-SendToLog "MSOfficeSoftuareUpdate Policy seems good" &&
-exit 0
+# No Need to Change -> exit
+[ -z "$ChgPolicyCmdMS" ]                            &&
+ SendToLog "MSOfficeUpdate Policy seems good"       &&
+ exit 0
 
-[ ! -z "$MSOfficeUpdatePolicyCmd" ]             && # Need to Change
-SendToLog "MSOfficeSoftwareUpdate Policy to be changed is found" &&
-ReplyOfCaution=$(                                  # Set Reply and Display dialog
-osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
-tell application "System Events" to display dialog "$MesCautionToChgPolicyMS" with icon 0
+
+# Need to Change
+[ ! -z "$ChgPolicyCmdMS" ]                          &&
+ SendToLog "MSOfficeUpdate Policy shuld be changed" &&
+
+# Set Reply and display dialog
+ReplyOfCaution=$( osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
+    tell application "System Events" to display dialog "$MesCautionToChgPolicyMS" with icon 0
 EOD
 )
 
-[ "$ReplyOfCaution" = "Cancel" ]                && # Reply is Cancel -> exit
-SendToLog "Cancel MSOfficeSoftwareUpdates Policites change by User" &&
-exit 0
+# Reply is Cancel -> exit
+[ "$ReplyOfCaution" = "Cancel" ]                    &&
+ SendToLog "Cancel MSOfficeUpdates Policites change by User" &&
+ exit 0
 
-[ "$ReplyOfCaution" = "OK" ]                    && # Reply is OK -> Change
-osascript <<-EOD &>/dev/null && 
-do shell script "$MSOfficeUpdatePolicyCmd 2>/dev/null"
-EOD
-SendToLog "MSOfficeSoftwareUpdate Policies are Changed" 
+# Reply is OK -> Change
+[ "$ReplyOfCaution" = "OK" ]                        &&
+ echo "$ChgPolicyCmdMS" | sh                        &&
+ SendToLog "MSOfficeUpdate Policies are Changed" 
 
