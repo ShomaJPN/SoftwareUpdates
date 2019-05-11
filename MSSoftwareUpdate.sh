@@ -67,7 +67,7 @@ fi
 
 function SendToLog ()
 {
-echo `date +"%Y-%m-%d %T"` : $@ | tee -a "$LogFile"
+echo $(date +"%Y-%m-%d %T") : $@ | tee -a "$LogFile"
 }
 
 ###################### End of set "Log" file and function ######################
@@ -144,30 +144,26 @@ ITサポートチーム(tel.xxx-xxxx-xxxx)
 
 SendToLog "MSOffice SoftwareUpdates check Started"
 
-# No Need to Change -> exit
-[ -z "$InstallSoftwaresMS" ]                       &&
-SendToLog "MSOffice Softuare seems up to date"     &&
-exit 0
+[ -z "$InstallSoftwaresMS" ]                        && # No Need to Change -> exit
+ SendToLog "MSOffice Softuare seems up to date"     &&
+ exit 0
 
-# Need to Change
-[ ! -z "$InstallSoftwaresMS" ]                     &&
-SendToLog "MSOffice SoftwareUpdates are found"     &&
-ReplyOfCautionDiag=$(
-osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
-tell application "System Events" to display dialog "$MesCautionToInstallMS" with icon 0
+[ ! -z "$InstallSoftwaresMS" ]                      && # Need to Change
+ SendToLog "MSOffice SoftwareUpdates are found"     &&
+ ReplyOfCautionDiag=$(
+ osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
+ tell application "System Events" to display dialog "$MesCautionToInstallMS" with icon 0
 EOD
 )
 
-# Reply is Cancel -> exit
-[ "$ReplyOfCautionDiag" = "Cancel" ]               &&
-SendToLog "Cancel MSOfficeSoftwareUpdates by User" &&
-exit 0
+[ "$ReplyOfCautionDiag" = "Cancel" ]                && # Reply is Cancel -> exit
+ SendToLog "Cancel MSOfficeSoftwareUpdates by User" &&
+ exit 0
 
-# Reply is OK
-[ "$ReplyOfCautionDiag" = "OK" ]                   &&
-echo $InstallCmdMS | sh                            &&
-SendToLog "MSOffice SoftwareUpdates are Finished"  &&
-osascript <<-EOD &>/dev/null
+[ "$ReplyOfCautionDiag" = "OK" ]                    && # Reply is OK
+ echo $InstallCmdMS | sh                            &&
+ SendToLog "MSOffice SoftwareUpdates are Finished"  &&
+ osascript <<-EOD &>/dev/null
 tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
 EOD
 
