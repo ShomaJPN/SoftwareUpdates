@@ -121,6 +121,6 @@ EOD
  exit 0
 
 [ "$ReplyOfCaution" = "OK" ]                        && # Reply is OK -> Change
- echo "$ChgPolicyCmdMS" | sh                        &&
+ $ChgPolicyCmdMS                                    &&
  SendToLog "MSOfficeUpdate Policies are Changed" 
 

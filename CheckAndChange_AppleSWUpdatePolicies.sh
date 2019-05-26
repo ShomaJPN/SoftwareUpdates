@@ -95,28 +95,28 @@ SetUpPolCmdMAS="defaults write /Library/Preferences/com.apple.commerce.plist"
 GetUpPolCmdAp="defaults read /Library/Preferences/com.apple.SoftwareUpdate.plist"
 SetUpPolCmdAp="defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist"
 
-[ "$( echo $GetUpPolCmdMAS | sh | grep 'AutoUpdate =' |grep 0 )" ]             &&
+[ "$( $GetUpPolCmdMAS | grep 'AutoUpdate =' |grep 0 )" ]                &&
 ChgPolicyCmd=$SetUpPolCmdMAS" AutoUpdate -int 1" 
 
-[ "$( echo $GetUpPolCmdAp | sh | grep AutomaticCheckEnabled |grep 0 )" ]       &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"                     &&
-ChgPolicyCmd=$ChgPolicyCmd$SetUpPolCmdAp" AutomaticCheckEnabled -int 1"
+[ "$( $GetUpPolCmdAp | grep AutomaticCheckEnabled |grep 0 )" ]          &&
+[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
+ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticCheckEnabled -int 1"
 
-[ "$( echo $GetUpPolCmdAp | sh | grep AutomaticDownload |grep 0 )" ]           &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"                     &&
-ChgPolicyCmd=$ChgPolicyCmd$SetUpPolCmdAp" AutomaticDownload -int 1"
+[ "$( $GetUpPolCmdAp | grep AutomaticDownload |grep 0 )" ]              &&
+[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
+ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticDownload -int 1"
 
-[ "$( echo $GetUpPolCmdAp | sh | grep AutomaticallyInstall |grep 0 )" ]        &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"                     &&
-ChgPolicyCmd=$ChgPolicyCmd$SetUpPolCmdAp" AutomaticallyInstallMacOSUpdates -int 1"
+[ "$( $GetUpPolCmdAp | grep AutomaticallyInstall |grep 0 )" ]           &&
+[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
+ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticallyInstallMacOSUpdates -int 1"
 
-[ "$( echo $GetUpPolCmdAp | sh | grep ConfigDataInstal |grep 0 )" ]            &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"                     &&
-ChgPolicyCmd=$ChgPolicyCmd$SetUpPolCmdAp" ConfigDataInstall -int 1"
+[ "$( $GetUpPolCmdAp | grep ConfigDataInstal |grep 0 )" ]               &&
+[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
+ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" ConfigDataInstall -int 1"
 
-[ "$( echo $GetUpPolCmdAp | sh | grep CriticalUpdateInstal |grep 0 )" ]        &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"                     &&
-ChgPolicyCmd=$ChgPolicyCmd$SetUpPolCmdAp" CriticalUpdateInstall -int 1"
+[ "$( $GetUpPolCmdAp | grep CriticalUpdateInstal |grep 0 )" ]           &&
+[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
+ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" CriticalUpdateInstall -int 1"
 
 # ChgPolicyItems: extract all Items from ChgPolicyCmd
 ChgPolicyItems=$(
@@ -162,9 +162,9 @@ SendToLog "AppleSoftwareUpdate Check Started"
  exit 0
 
 [ ! -z "$ChgPolicyCmd" ] &&                         # Need to Change
- SendToLog "AppleSoftwareUpdate Policits to be changed are found" &&
- SendToLog "Num of changes : ""$NumOfChgPolicyItems"              &&
- SendToLog "$ChgPolicyItems"                                      &&
+ SendToLog "AppleSoftwareUpdate Policits to be changed are found"     &&
+ SendToLog "Num of changes : ""$NumOfChgPolicyItems"                  &&
+ SendToLog "$ChgPolicyItems"                                          &&
 
  ReplyOfCautionDiag=$(                              # Set Reply and Display dialog
  osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
@@ -173,7 +173,7 @@ EOD
 )
 
 [ "$ReplyOfCautionDiag" = "Cancel" ] &&             # Reply is Cancel -> exit
- SendToLog "Cancel AppleSoftwareUpdates Policites change by User" &&
+ SendToLog "Cancel AppleSoftwareUpdates Policites change by User"     &&
  exit 0
 
 [ "$ReplyOfCautionDiag" = "OK" ] &&                 # Reply is OK
