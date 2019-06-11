@@ -111,7 +111,7 @@ NumOfSoftwaresMS=$( echo "$InstallSoftwaresMS" | grep -cv '^$' )
 
 #for debug
 echo "---"
-echo $InstallCmdMS
+echo "$InstallCmdMS"
 echo "---"
 
 echo -e "Reply of Update MS\n""$ReplyOfUpdateMS"
