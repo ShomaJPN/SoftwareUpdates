@@ -86,7 +86,7 @@ echo $(date +"%Y-%m-%d %T") : $@ | tee -a "$LogFile"
 #  Variables by Update-command ---
 #      4.ReplyOfUpdateMS       : raw command-reply data
 #      5.InstallSoftwaresMS    : Install/Update Softwares
-#   　 6.NumOfSoftwareMS       : Number of Install/Update Softwares
+#   　 6.NumOfSoftwaresMS       : Number of Install/Update Softwares
 #
 #  Messages ---
 #      7.MesCautionToInstallMS : Message when there is update
@@ -106,7 +106,7 @@ InstallSoftwaresMS=$(
  sed -e 's/^..//g'
 )
 
-NumOfSoftwareMS=$( echo "$InstallSoftwaresMS" | grep -cv '^$' )
+NumOfSoftwaresMS=$( echo "$InstallSoftwaresMS" | grep -cv '^$' )
 
 
 #for debug
@@ -116,7 +116,7 @@ echo "---"
 
 echo -e "Reply of Update MS\n""$ReplyOfUpdateMS"
 echo -e "Install Software(s) MS:\n" $InstallSoftwaresMS
-echo "Num of Updates : " "$NumOfSoftwareMS"
+echo "Num of Updates : " "$NumOfSoftwaresMS"
 
 
 MesCautionToInstallMS="ITサポートチームです
@@ -148,25 +148,27 @@ ITサポートチーム(tel.xxx-xxxx-xxxx)
 
 SendToLog "MSOffice SoftwareUpdates check Started"
 
-[ -z "$InstallSoftwaresMS" ]                        && # No Need to Change -> exit
- SendToLog "MSOffice Softuare seems up to date"     &&
+[ -z "$InstallSoftwaresMS" ]                                 && # No Need to Change -> exit
+ SendToLog "MSOffice Softuare seems up to date"              &&
  exit 0
 
-[ ! -z "$InstallSoftwaresMS" ]                      && # Need to Change
- SendToLog "MSOffice SoftwareUpdates are found"     &&
+[ ! -z "$InstallSoftwaresMS" ]                               && # Need to Change
+ SendToLog "MSOffice SoftwareUpdates are found"              &&
+ SendToLog "Num of Updates: ""$NumOfSoftwaresMS"             &&
+ SendToLog "$( echo -n "$InstallSoftwaresMS" | tr '\n' ';')" &&
  ReplyOfCautionDiag=$(
  osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
  tell application "System Events" to display dialog "$MesCautionToInstallMS" with icon 0
 EOD
 )
 
-[ "$ReplyOfCautionDiag" = "Cancel" ]                && # Reply is Cancel -> exit
- SendToLog "Cancel MSOfficeSoftwareUpdates by User" &&
+[ "$ReplyOfCautionDiag" = "Cancel" ]                         && # Reply is Cancel -> exit
+ SendToLog "Cancel MSOfficeSoftwareUpdates by User"          &&
  exit 0
 
-[ "$ReplyOfCautionDiag" = "OK" ]                    && # Reply is OK
- echo $InstallCmdMS | sh                            &&
- SendToLog "MSOffice SoftwareUpdates are Finished"  &&
+[ "$ReplyOfCautionDiag" = "OK" ]                             && # Reply is OK
+ echo $InstallCmdMS | sh                                     &&
+ SendToLog "MSOffice SoftwareUpdates are Finished"           &&
  osascript <<-EOD &>/dev/null
 tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
 EOD

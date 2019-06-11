@@ -173,7 +173,7 @@ InstallReqSoftwares=$(
   grep -v "Finding available software" |
   grep -v "Software Update found the following new or updated software:" |
   grep -v "*" |
-  sed -e 's/^.//g'
+  sed 's/^[[:space:]]*//'
 )
 RecommendSoftwares=$(echo "$ReplyOfUpdate" | grep recommended)
 NeedToRestartSoftwares=$(echo "$ReplyOfUpdate" | grep restart)
@@ -242,7 +242,7 @@ if [ -z "$InstallReqSoftwares" ]; then
     echo "Need to Updates"
     SendToLog "AppleSoftwareUpdaters are found"
     SendToLog "Num of Updates: ""$NumOfSoftwares"
-    SendToLog "$( echo "$InstallReqSoftwares" | tr '\n' '; ')"
+    SendToLog "$( echo "$InstallReqSoftwares" | tr '\n' ';')"
     InstallSoftware
 
   else
