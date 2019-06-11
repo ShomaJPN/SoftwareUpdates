@@ -103,7 +103,7 @@ InstallSoftwaresMS=$(
  grep -v "Checking for updates" |
  grep -v "Updates available" |
  grep -v "No updates available" |
- sed -e 's/^..//g'
+ sed 's/[[:space:]]*//'
 )
 
 NumOfSoftwaresMS=$( echo "$InstallSoftwaresMS" | grep -cv '^$' )
@@ -170,7 +170,7 @@ EOD
  echo $InstallCmdMS | sh                                     &&
  SendToLog "MSOffice SoftwareUpdates are Finished"           &&
  osascript <<-EOD &>/dev/null
-tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
+ tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
 EOD
 
 
