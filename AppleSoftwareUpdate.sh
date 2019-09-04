@@ -2,7 +2,7 @@
 ##
 ## Name:
 ##  AppleSoftwareUpdate.sh
-##  Created by SHOMA on 4/18/2019. Last edited by SHOMA 5/9/2019
+##  Created by SHOMA on 4/18/2019. Last edited by SHOMA 9/4/2019
 ##
 ## Overview:
 ##  Check AppleSystem Updates ,and if present, Display Dialog to install
@@ -105,7 +105,11 @@ function InstallSoftware ()
 # Set Reply and display dialog 
 ReplyOfCautionDiag=$(
 osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-tell application "System Events" to display dialog "$Mes" with icon 0
+tell application "System Events"
+ with timeout of 30 seconds
+  display dialog "$Mes" with title "Caution" with icon POSIX file "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns" giving up after 20
+ end timeout
+end tell
 EOD
 )
 
@@ -131,7 +135,7 @@ EOD
     softwareupdate -ia --include-config-data
     SendToLog "Finish AppleSoftwareUpdates"
     osascript <<-EOD &>/dev/null
-    tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
+    tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with title "Thank you" with icon 2 giving up after 10
 EOD
 
 fi
@@ -190,32 +194,35 @@ echo "Num of Updates: " $NumOfSoftwares
 echo -e "Install Software(s):\n" $InstallReqSoftwares
 
 
-MesReqRestart="ITサポートチームです
+MesReqRestart="IT support team
 
-重要なソフトウエアアップデートがあります
-この処理は管理者権限が必要で自動的に再起動されます
-許可しますか？
+There are important software updates
+This process requires administrator privileges and will restart automatically
+Do you want to allow it?
 
-不明な場合はITサポートチーム(tel.xxx-xxxx-xxxx)まで
-
-
-"
-MesNoRestart="ITサポートチームです
-
-重要なソフトウエアアップデートがあります
-この処理には再起動の必要がありません
-インストールを始めても宜しいですか？
-
-不明な場合はITサポートチーム(tel.xxx-xxxx-xxxx)まで
+If you are unsure, contact the IT support team (tel.xxx-xxxx-xxxx)
 
 
 "
-MesFinishInstall="アップデートが終了しました
-ご協力ありがとうございました
-ITサポートチーム(tel.xxx-xxxx-xxxx)
+
+MesNoRestart=i"IT support team
+
+There are important software updates
+This process does not require a restart
+Is it okay to start the installation?
+
+If you are unsure, contact the IT support team (tel.xxx-xxxx-xxxx)
 
 
 "
+
+MesFinishInstall="Update finished !
+Thank you for your cooperation
+IT support team (tel.xxx-xxxx-xxxx)
+
+
+"
+
 
 ############################  End of Set Variables #############################
 

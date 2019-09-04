@@ -2,7 +2,7 @@
 ##
 ## Name:
 ##  MSSoftwareUpdate.sh
-##  Created by SHOMA on 4/29/2019. Last edited by SHOMA 4/29/2019
+##  Created by SHOMA on 4/29/2019. Last edited by SHOMA 9/4/2019
 ##
 ## Overview:
 ##  Check MSOffice Updates ,and if present, Display dialog to install
@@ -119,21 +119,23 @@ echo -e "Install Software(s) MS:\n" $InstallSoftwaresMS
 echo "Num of Updates : " "$NumOfSoftwaresMS"
 
 
-MesCautionToInstallMS="ITサポートチームです
+MesCautionToInstallMS="IT support team
 
-MS Officeの重要なソフトウエアアップデートがあります
-常にアップデートを行なわないと動作不良になることがあります
-インストールを始めても宜しいですか？
+There is an important software update for MS Office.
+If you don't always update, you may have a problem.
+Is it okay to start the installation?
 
 
-不明な場合はITサポートチーム(tel.xxx-xxxx-xxxx)まで
+If you are unsure, please contact the IT support team
+ (tel.xxx-xxxx-xxxx)
 
 
 "
-MesFinishInstall="アップデートが終了しました
-MS Officeソフトウエアを起動中の場合は一度終了させてください
-ご協力ありがとうございました
-ITサポートチーム(tel.xxx-xxxx-xxxx)
+
+MesFinishInstall="Update finished !
+If MS Office software is running, please close it once
+Thank you for your cooperation
+IT support team (tel.xxx-xxxx-xxxx)
 
 
 "
@@ -158,7 +160,11 @@ SendToLog "MSOffice SoftwareUpdates check Started"
  SendToLog "$( echo -n "$InstallSoftwaresMS" | tr '\n' ';')" &&
  ReplyOfCautionDiag=$(
  osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
- tell application "System Events" to display dialog "$MesCautionToInstallMS" with icon 0
+tell application "System Events"
+ with timeout of 30 seconds
+  display dialog "$MesCautionToInstallMS" with title "Caution" with icon POSIX file "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns" giving up after 20
+ end timeout
+end tell
 EOD
 )
 
@@ -170,7 +176,7 @@ EOD
  echo $InstallCmdMS | sh                                     &&
  SendToLog "MSOffice SoftwareUpdates are Finished"           &&
  osascript <<-EOD &>/dev/null
- tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with icon 2
+ tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with title "Thank you" with icon 2 giving up after 10
 EOD
 
 
