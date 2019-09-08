@@ -205,7 +205,7 @@ If you are unsure, contact the IT support team (tel.xxx-xxxx-xxxx)
 
 "
 
-MesNoRestart=i"IT support team
+MesNoRestart="IT support team
 
 There are important software updates
 This process does not require a restart
