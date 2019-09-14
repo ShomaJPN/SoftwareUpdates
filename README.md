@@ -33,7 +33,7 @@ Excute these ShellScripts with launchctl / launchd.
 
 ## Install and Run
 Put ShellScripts to the appropriate directory  `(ex.~/Script)`  , and set execute permissions.  
-Make or change launchd's command plist file according to your environment , then put it to the appropriate directory. `(ex.~/Library/LaunchAgents)`  
+Make or change launchd's command plist file, then put it to the appropriate directory. `(ex.~/Library/LaunchAgents)`  
 At the first run, confirmation dialog (xxx would like to control "System Events"...) is appeared.  
 Please allow it (in the case of Mojave )  
 ![TCC_fig](https://user-images.githubusercontent.com/49780970/57506250-3cfaac00-7336-11e9-9cc7-019c04ea0f3c.jpg)  
