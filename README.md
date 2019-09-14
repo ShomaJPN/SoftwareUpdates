@@ -1,12 +1,9 @@
 # SoftwareUpdates (macOS)
 
 ## Overview
-These Tiny Bash ShellScripts help to check SoftwareUpdate policies, and install SoftwareUpdate.
-
+These Tiny Bash ShellScripts help to check SoftwareUpdate policies, and install SoftwareUpdate. 
 During Finder login , display FinderDialog to prompt for changing policy / installing if necessary. 
-
-If administrator privileges is required, it shows "Touch ID" dialog.
-
+If administrator privileges is required, it shows "Touch ID" dialog. 
 Plese use with launchd / launchctl. (ex. check Every xx hours while logged in)  
 ![touchid](https://user-images.githubusercontent.com/49780970/57564890-c2419780-73ee-11e9-8085-e87d5961af8b.gif)
 ## Description
@@ -24,11 +21,11 @@ Suitable for organizations that encourage users to act, may be ..
 ## Usage
 Excute these ShellScripts with launchctl / launchd.
 - CheckAndChange_AppleSWUpdatePolicies.sh   <-- AppleSoftware Policy check and change script
-- AppleSoftwareUpdate.sh                    <-- AppleSoftware update script  
+- AppleSoftwareUpdate.sh                    <-- AppleSoftware update script
 
 
 - CheckAndChange_MSOfficeUpdatePolicies.sh  <-- MS Office Policy check and change script
-- MSSoftwareUpdate.sh                       <-- MS Office update script  
+- MSSoftwareUpdate.sh                       <-- MS Office update script
 
 
 - com.myOrganization.cmd.plist              <-- Sample /launchd's command plist file
@@ -37,7 +34,7 @@ Excute these ShellScripts with launchctl / launchd.
 ## Install and Run
 Put ShellScripts to the appropriate directory  `(ex.~/Script)`  , and set execute permissions.  
 Make or change launchd's command plist file according to your environment , then put it to the appropriate directory. `(ex.~/Library/LaunchAgents)`  
-At the first run, confirmation dialog (xxx would like to control "System Events"...) is appeared.
+At the first run, confirmation dialog (xxx would like to control "System Events"...) is appeared. 
 Please allow it (in the case of Mojave )  
 ![TCC_fig](https://user-images.githubusercontent.com/49780970/57506250-3cfaac00-7336-11e9-9cc7-019c04ea0f3c.jpg)  
 If you did not allow it by mistake, try `$ tccutil reset AppleEvents`  
