@@ -84,13 +84,13 @@ ChgPolicyCmdMS="defaults write ~/Library/Preferences/com.microsoft.autoupdate2.p
 #for debug
 echo "ChgPolicyCmdMS : ""$ChgPolicyCmdMS"
 
-MesCautionToChgPolicyMS="ITサポートチームです
+MesCautionToChgPolicyMS="IT support team
 
-MS Officeソフトウエアアップデート設定が自動設定になっていません
-常にアップデートを行なわないと動作不良になることがあります
-設定変更しますか？
+MS Office Software update setting is not set to 'Automatically'
+You have a security risk and it may malfunction.
+Is it okay to change this setting?
 
-不明な場合はITサポートチーム(tel.xxx-xxxx-xxxx)まで
+If you are unsure, contact the IT support team (tel.xxx-xxxx-xxxx)
 
 
 "
