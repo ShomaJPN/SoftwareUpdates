@@ -136,13 +136,13 @@ echo "ChgPolicyItems : "$ChgPolicyItems
 echo "NumOfChgPolicyItems: "$NumOfChgPolicyItems
 
 # FinderDialog's Message (CautionDialog)
-MesCautionToChange="ITサポートチームです
+MesCautionToChange="IT support team
 
-ソフトウエアアップデート設定が自動設定になっていません
-常にアップデートを行なわないと動作不良になることがあります
-設定変更しますか？
+Software update settings are not set automatically
+If it is not always updated, there is a security risk and it may malfunction.
+Is it okay to change this setting?
 
-不明な場合はITサポートチーム(tel.xxx-xxxx-xxxx)まで
+If you are unsure, contact the IT support team (tel.xxx-xxxx-xxxx)
 
 
 "
