@@ -169,8 +169,8 @@ SendToLog "AppleSoftwareUpdate Check Started"
 ReplyOfCautionDiag=$(                              # Set Reply and Display dialog
 osascript <<-EOD && echo "Success" || echo "NotSuccess"
 tell application "System Events"
-  with timeout of 10 seconds
-    button returned of (display dialog "$MesCautionToChange" buttons {"YES","NO"} default button 1 with title "Caution" with icon 0 giving up after 5)
+  with timeout of 40 seconds
+    button returned of (display dialog "$MesCautionToChange" buttons {"YES","NO"} default button 1 with title "Caution" with icon 0 giving up after 30)
   end timeout
 end tell
 EOD
