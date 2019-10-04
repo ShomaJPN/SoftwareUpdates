@@ -111,20 +111,26 @@ SendToLog "MSOfficeUpdate policy check Started"
 
 [ ! -z "$ChgPolicyCmdMS" ]                          && # Need to Change
  SendToLog "MSOfficeUpdate Policy shuld be changed" && # Set Reply and display dialog
- ReplyOfCaution=$( osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
+ ReplyOfCaution=$( osascript <<-EOD && echo "Success" || echo "NotSuccess"
   tell application "System Events"
-   with timeout of 30 seconds
-    display dialog "$MesCautionToChgPolicyMS" with title "Caution" with icon 0
+   with timeout of 40 seconds
+    button returned of ( display dialog "$MesCautionToChgPolicyMS" buttons {"Yes","No"} default button 1 with title "Caution" with icon 0 giving up after 30 )
    end timeout
   end tell
 EOD
 )
 
-[ "$ReplyOfCaution" = "Cancel" ]                    && # Reply is Cancel -> exit
+echo '$Reply of Caution is : '"$ReplyOfCaution"
+
+[ "$( echo $ReplyOfCaution | grep "No Success" )" ]          && # Reply is No -> exit
  SendToLog "Cancel MSOfficeUpdates Policites change by User" &&
  exit 0
 
-[ "$ReplyOfCaution" = "OK" ]                        && # Reply is OK -> Change
- echo $ChgPolicyCmdMS | sh                          &&
- SendToLog "MSOfficeUpdate Policies are Changed" 
+[ "$( echo $ReplyOfCaution |grep "Yes Success" )" ]          && # Reply is Yes -> Change
+ echo $ChgPolicyCmdMS | sh                                   &&
+ SendToLog "MSOfficeUpdate Policies are Changed"             &&
+ exit 0
+
+[ "$( echo $ReplyOfCaution |grep "Success" )" ]              && # Reply is "" -> Timeout
+ SendToLog "MSOfficeUpdate Policies Change is Timeout"
 
