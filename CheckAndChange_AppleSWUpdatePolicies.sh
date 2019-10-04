@@ -166,26 +166,33 @@ SendToLog "AppleSoftwareUpdate Check Started"
  SendToLog "Num of changes : ""$NumOfChgPolicyItems"                  &&
  SendToLog "$ChgPolicyItems"                                          &&
 
- ReplyOfCautionDiag=$(                              # Set Reply and Display dialog
- osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
- tell application "System Events" to display dialog "$MesCautionToChange" with icon 0
+ReplyOfCautionDiag=$(                              # Set Reply and Display dialog
+osascript <<-EOD && echo "Success" || echo "NotSuccess"
+tell application "System Events"
+  with timeout of 10 seconds
+    button returned of (display dialog "$MesCautionToChange" buttons {"YES","NO"} default button 1 with title "Caution" with icon 0 giving up after 5)
+  end timeout
+end tell
 EOD
 )
 
-[ "$ReplyOfCautionDiag" = "Cancel" ] &&             # Reply is Cancel -> exit
- SendToLog "Cancel AppleSoftwareUpdates Policites change by User"     &&
+#for debug
+echo "ReplyOfCautionDiag : "$ReplyOfCautionDiag
+
+[ "$(echo $ReplyOfCautionDiag | grep "NO Success")" ] &&   # Reply is Cancel -> exit
+ SendToLog "Cancel AppleSoftwareUpdates Policites change by User" &&
  exit 0
 
-[ "$ReplyOfCautionDiag" = "OK" ] &&                 # Reply is OK
- ReplyOfAdminDiag=$(                                # Set Reply and Display dialog (AdminPriv.) then Change 
- osascript <<-EOD &>/dev/null && echo OK || echo Cancel
- do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
+[ "$(echo $ReplyOfCautionDiag | grep "YES Success")" ] &&  # Reply is OK     -> install
+ReplyOfAdminDiag=$(                                        # Set Reply and Display dialog (AdminPriv.) then Change 
+osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
 EOD
-)
-                                                    # Logging..
-[ "$ReplyOfAdminDiag" = "OK" ] && SendToLog "AppleSoftwareUpdates Policies are Changed"
-[ "$ReplyOfAdminDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)"
+)                                                      &&  # Logging..
+[ "$(echo $ReplyOfAdminDiag | grep  "OK")" ] && SendToLog "AppleSoftwareUpdates Policies are Changed" && exit 0
+[ "$(echo $ReplyOfAdminDiag | grep  "Cancel")" ] && SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)" && exit 0
 
-
-
+[ "$(echo $ReplyOfCautionDiag | grep "Success")" ] &&      # Reply is ""     -> Timeout
+SendToLog "AppleSoftwareUpdates Policites change is Timeout !" &&
+exit 0
 
