@@ -147,6 +147,14 @@ If you are unsure, contact the IT support team (tel.xxx-xxxx-xxxx)
 
 "
 
+MesFinishChanges="Change finished !
+Thank you for your cooperation
+IT support team (tel.xxx-xxxx-xxxx)
+
+
+"
+
+
 ######################### End of Set Variables #################################
 
 
@@ -161,7 +169,7 @@ SendToLog "AppleSoftwareUpdate Check Started"
  SendToLog "AppleSoftuareUpdate Policies seems good" &&
  exit 0
 
-[ -n "$ChgPolicyCmd" ] &&                         # Need to Change
+[ -n "$ChgPolicyCmd" ] &&                           # Need to Change
  SendToLog "AppleSoftwareUpdate Policits to be changed are found"     &&
  SendToLog "Num of changes : ""$NumOfChgPolicyItems"                  &&
  SendToLog "$ChgPolicyItems"                                          &&
@@ -179,18 +187,24 @@ EOD
 #for debug
 echo "ReplyOfCautionDiag : "$ReplyOfCautionDiag
 
-[ "$(echo $ReplyOfCautionDiag | grep "NO Success")" ] &&   # Reply is Cancel -> exit
+[ "$(echo $ReplyOfCautionDiag | grep "NO Success")" ]   && # Reply is Cancel -> exit
  SendToLog "Cancel AppleSoftwareUpdates Policites change by User" &&
  exit 0
 
-[ "$(echo $ReplyOfCautionDiag | grep "YES Success")" ] &&  # Reply is OK     -> Change
- ReplyOfAdminDiag=$(                                        # Set Reply and Display dialog (AdminPriv.) then Change 
+[ "$(echo $ReplyOfCautionDiag | grep "YES Success")" ]  && # Reply is OK     -> Change
+ ReplyOfAdminDiag=$(                                       # Set Reply and Display dialog (AdminPriv.) then Change 
  osascript <<-EOD &>/dev/null && echo OK || echo Cancel
  do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
 EOD
-)                                                      &&  # Logging..
- [ "$(echo $ReplyOfAdminDiag | grep  "OK")" ] && SendToLog "AppleSoftwareUpdates Policies are Changed" && exit 0
- [ "$(echo $ReplyOfAdminDiag | grep  "Cancel")" ] && SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)" && exit 0
+)                                                       &&
+ [ "$(echo $ReplyOfAdminDiag | grep  "OK")" ]           &&
+  SendToLog "AppleSoftwareUpdates Policies are Changed" && # Logging..
+  osascript <<-EOD &>/dev/null                          && # Display thanks Message
+  tell application "System Events" to display dialog "$MesFinishChanges" buttons {"OK"} with title "Thank you" with icon 2 giving up after 10
+EOD
+ exit 0
+ [ "$(echo $ReplyOfAdminDiag | grep  "Cancel")" ]       &&
+  SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)" && exit 0
 
 [ "$(echo $ReplyOfCautionDiag | grep "Success")" ] &&      # Reply is ""     -> Timeout
  SendToLog "AppleSoftwareUpdates Policites change is Timeout !" &&
