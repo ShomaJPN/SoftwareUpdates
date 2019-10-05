@@ -99,23 +99,23 @@ SetUpPolCmdAp="defaults write /Library/Preferences/com.apple.SoftwareUpdate.plis
 ChgPolicyCmd=$SetUpPolCmdMAS" AutoUpdate -int 1" 
 
 [ "$( $GetUpPolCmdAp | grep AutomaticCheckEnabled |grep 0 )" ]          &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
+[ -n "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
 ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticCheckEnabled -int 1"
 
 [ "$( $GetUpPolCmdAp | grep AutomaticDownload |grep 0 )" ]              &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
+[ -n "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
 ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticDownload -int 1"
 
 [ "$( $GetUpPolCmdAp | grep AutomaticallyInstall |grep 0 )" ]           &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
+[ -n "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
 ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticallyInstallMacOSUpdates -int 1"
 
 [ "$( $GetUpPolCmdAp | grep ConfigDataInstal |grep 0 )" ]               &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
+[ -n "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
 ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" ConfigDataInstall -int 1"
 
 [ "$( $GetUpPolCmdAp | grep CriticalUpdateInstal |grep 0 )" ]           &&
-[ ! -z "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
+[ -n "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
 ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" CriticalUpdateInstall -int 1"
 
 # ChgPolicyItems: extract all Items from ChgPolicyCmd
@@ -161,18 +161,18 @@ SendToLog "AppleSoftwareUpdate Check Started"
  SendToLog "AppleSoftuareUpdate Policies seems good" &&
  exit 0
 
-[ ! -z "$ChgPolicyCmd" ] &&                         # Need to Change
+[ -n "$ChgPolicyCmd" ] &&                         # Need to Change
  SendToLog "AppleSoftwareUpdate Policits to be changed are found"     &&
  SendToLog "Num of changes : ""$NumOfChgPolicyItems"                  &&
  SendToLog "$ChgPolicyItems"                                          &&
 
-ReplyOfCautionDiag=$(                              # Set Reply and Display dialog
-osascript <<-EOD && echo "Success" || echo "NotSuccess"
-tell application "System Events"
+ ReplyOfCautionDiag=$(                              # Set Reply and Display dialog
+ osascript <<-EOD && echo "Success" || echo "NotSuccess"
+ tell application "System Events"
   with timeout of 40 seconds
-    button returned of (display dialog "$MesCautionToChange" buttons {"YES","NO"} default button 1 with title "Caution" with icon 0 giving up after 30)
+   button returned of (display dialog "$MesCautionToChange" buttons {"YES","NO"} default button 1 with title "Caution" with icon 0 giving up after 30)
   end timeout
-end tell
+ end tell
 EOD
 )
 
@@ -183,16 +183,16 @@ echo "ReplyOfCautionDiag : "$ReplyOfCautionDiag
  SendToLog "Cancel AppleSoftwareUpdates Policites change by User" &&
  exit 0
 
-[ "$(echo $ReplyOfCautionDiag | grep "YES Success")" ] &&  # Reply is OK     -> install
-ReplyOfAdminDiag=$(                                        # Set Reply and Display dialog (AdminPriv.) then Change 
-osascript <<-EOD &>/dev/null && echo OK || echo Cancel
-do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
+[ "$(echo $ReplyOfCautionDiag | grep "YES Success")" ] &&  # Reply is OK     -> Change
+ ReplyOfAdminDiag=$(                                        # Set Reply and Display dialog (AdminPriv.) then Change 
+ osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+ do shell script "$ChgPolicyCmd 2>/dev/null" with administrator privileges
 EOD
 )                                                      &&  # Logging..
-[ "$(echo $ReplyOfAdminDiag | grep  "OK")" ] && SendToLog "AppleSoftwareUpdates Policies are Changed" && exit 0
-[ "$(echo $ReplyOfAdminDiag | grep  "Cancel")" ] && SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)" && exit 0
+ [ "$(echo $ReplyOfAdminDiag | grep  "OK")" ] && SendToLog "AppleSoftwareUpdates Policies are Changed" && exit 0
+ [ "$(echo $ReplyOfAdminDiag | grep  "Cancel")" ] && SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)" && exit 0
 
 [ "$(echo $ReplyOfCautionDiag | grep "Success")" ] &&      # Reply is ""     -> Timeout
-SendToLog "AppleSoftwareUpdates Policites change is Timeout !" &&
-exit 0
+ SendToLog "AppleSoftwareUpdates Policites change is Timeout !" &&
+ exit 0
 
