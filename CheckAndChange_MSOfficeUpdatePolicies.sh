@@ -95,6 +95,14 @@ If you are unsure, contact the IT support team (tel.xxx-xxxx-xxxx)
 
 "
 
+MesFinishChangesMS="Change finished !
+Thank you for your cooperation
+IT support team (tel.xxx-xxxx-xxxx)
+
+
+"
+
+
 ########################### End of Set Variables ###############################
 
 
@@ -129,6 +137,9 @@ echo '$Reply of Caution is : '"$ReplyOfCaution"
 [ "$( echo $ReplyOfCaution |grep "Yes Success" )" ]          && # Reply is Yes -> Change
  echo $ChgPolicyCmdMS | sh                                   &&
  SendToLog "MSOfficeUpdate Policies are Changed"             &&
+ osascript <<-EOD &>/dev/null                                && # Display thanks Message
+  tell application "System Events" to display dialog "$MesFinishChangesMS" buttons {"OK"} with title "Thank you" with icon 2 giving up after 10
+EOD
  exit 0
 
 [ "$( echo $ReplyOfCaution |grep "Success" )" ]              && # Reply is "" -> Timeout
