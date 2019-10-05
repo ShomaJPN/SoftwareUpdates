@@ -203,8 +203,10 @@ EOD
   tell application "System Events" to display dialog "$MesFinishChanges" buttons {"OK"} with title "Thank you" with icon 2 giving up after 10
 EOD
  exit 0
+
  [ "$(echo $ReplyOfAdminDiag | grep  "Cancel")" ]       &&
-  SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)" && exit 0
+  SendToLog "Cancel AppleSoftwareUpdates Policty change by User(AdminPriv. dialog)" &&
+  exit 0
 
 [ "$(echo $ReplyOfCautionDiag | grep "Success")" ] &&      # Reply is ""     -> Timeout
  SendToLog "AppleSoftwareUpdates Policites change is Timeout !" &&
