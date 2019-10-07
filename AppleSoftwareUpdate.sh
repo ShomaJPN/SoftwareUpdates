@@ -2,7 +2,7 @@
 ##
 ## Name:
 ##  AppleSoftwareUpdate.sh
-##  Created by SHOMA on 4/18/2019. Last edited by SHOMA 9/4/2019
+##  Created by SHOMA on 4/18/2019. Last edited by SHOMA 10/6/2019
 ##
 ## Overview:
 ##  Check AppleSystem Updates ,and if present, Display Dialog to install

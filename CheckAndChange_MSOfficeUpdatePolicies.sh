@@ -2,7 +2,7 @@
 ##
 ## Name:
 ##  CheckAndChange_MSOfficeUpdatePolicies.sh
-##  Created by SHOMA on 4/27/2019. Last edited by SHOMA 5/9/2019
+##  Created by SHOMA on 4/27/2019. Last edited by SHOMA 10/6/2019
 ##
 ## Overview:
 ##  Check MSOffice Update Polity ,Show FinderDialog to change if necessary
