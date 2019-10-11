@@ -1,14 +1,14 @@
 # SoftwareUpdates (macOS)
 
 ## Overview
-These Tiny Bash ShellScripts help to check SoftwareUpdate policies, and install SoftwareUpdate.  
-During Finder login , display FinderDialog to prompt for changing policy / installing if necessary.  
+These Bash ShellScripts help to check UpdatePolicy and install SoftwareUpdate(MS Office and macOS).  
+Display FinderDialog to prompt for changing policy / installing if necessary.  
 If administrator privileges is required, it shows "Touch ID" dialog.  
 Plese use with launchd / launchctl. (ex. check Every xx hours while logged in)  
 ![touchid](https://user-images.githubusercontent.com/49780970/66632988-b891b980-ec44-11e9-938e-625929881f15.gif)
 ## Description
-This was made to realize UserRemind and promote Education to users that is not enough with push-service(MDM).  
-Suitable for organizations that encourage users to act, may be ..  
+This was made to realize UserRemind and promote Education to users.
+Suitable for the Organizations that encourage user behavior, may be ..  
 
 ## Requirements
 - Bash (for ShellScript)
