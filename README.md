@@ -39,6 +39,8 @@ At the first run, confirmation dialog (xxx would like to control "System Events"
 Please allow it (in the case of Mojave )  
 ![ticc](https://user-images.githubusercontent.com/49780970/66635253-c39b1880-ec49-11e9-8e81-5ab511f87946.jpg)  
 If you did not allow it by mistake, try `$ tccutil reset AppleEvents`  
+Ref.[Ref](https://www.youtube.com/watch?v=fyUB4L3ahZ4)
+
 
 Start with the following command (only the first time)  
 　```launchctl load /Path/to/plist```  
