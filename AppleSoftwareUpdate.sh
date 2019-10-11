@@ -89,11 +89,7 @@ echo $(date +"%Y-%m-%d %T") : $@ | tee -a "$LogFile"
 #   InstallSoftware ()              - when Not Need to Restart to install
 #
 # Should be implemented in the future:
-#  -Timeout processing (when user do nothing)
-#    - OnlyIn "System Events" tell block
-#      - close dialog time (giving up after xx)
-#      - then kill process script (with timeout of 500 seconds) 
-#
+#   -
 #
 
 function InstallSoftware ()
