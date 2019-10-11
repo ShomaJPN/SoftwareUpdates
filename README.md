@@ -4,7 +4,8 @@
 These Bash ShellScripts help to check UpdatePolicy and install SoftwareUpdate(MS Office and macOS).  
 Display FinderDialog to prompt for changing policy / installing if necessary.  
 If administrator privileges is required, it shows "Touch ID" dialog.  
-Plese use with launchd / launchctl. (ex. check Every xx hours while logged in)  
+Plese use with launchd / launchctl. (check Every xx hours while logged in)  
+  
 ![touchid](https://user-images.githubusercontent.com/49780970/66632988-b891b980-ec44-11e9-938e-625929881f15.gif)
 ## Description
 This was made to realize UserRemind and promote Education to users.
@@ -36,7 +37,7 @@ Put ShellScripts to the appropriate directory  `(ex.~/Script)`  , and set execut
 Make or change launchd's command plist file, then put it to the appropriate directory. `(ex.~/Library/LaunchAgents)`  
 At the first run, confirmation dialog (xxx would like to control "System Events"...) is appeared.  
 Please allow it (in the case of Mojave )  
-![TCC_fig](https://user-images.githubusercontent.com/49780970/57506250-3cfaac00-7336-11e9-9cc7-019c04ea0f3c.jpg)  
+![TCC_fig](https://user-images.githubusercontent.com/49780970/66634259-a6654a80-ec47-11e9-8462-74a7aa2ff958.jpg)  
 If you did not allow it by mistake, try `$ tccutil reset AppleEvents`  
 
 Start with the following command (only the first time)  
