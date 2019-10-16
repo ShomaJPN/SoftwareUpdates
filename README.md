@@ -12,6 +12,8 @@ This was made to realize UserRemind and promote Education to users.
 Suitable for the Organizations that encourage user behavior, may be ..  
 
 ## Requirements
+- Login of a user with administrator privileges
+
 - Bash (for ShellScript)
   - osascript (for FinderDialog)
   - do shell script (for ShellScript /w osascript)
