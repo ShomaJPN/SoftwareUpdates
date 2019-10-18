@@ -1,8 +1,8 @@
 # SoftwareUpdates (macOS)
 
 ## Overview
-These Bash ShellScripts check UpdatePolicies and install SoftwareUpdates (MS Office and macOS).  
-Display FinderDialog to prompt for changing policy / installing.  
+These Bash ShellScripts check update-policies and install updates (MS Office and macOS).  
+Display Finder-Dialog to prompt for changing policy / installing.  
 If administrator privileges is required, it shows "Touch ID" dialog.  
 Plese use with launchd / launchctl. (check Every xx hours while logged in)  
   
@@ -28,7 +28,7 @@ Excute these ShellScripts with launchctl / launchd.
 
 
 - CheckAndChange_MSOfficeUpdatePolicies.sh  <-- Check and change MS-OfficeUpdate Policy script
-- MSSoftwareUpdate.sh                       <-- Update MS-Office script
+- MSSoftwareUpdate.sh                       <-- Update MS-Office software script
 
 
 - com.myOrganization.cmd.plist              <-- Sample /launchd's command-plist
@@ -36,8 +36,8 @@ Excute these ShellScripts with launchctl / launchd.
 
 ## Install and Run
 Put these ShellScripts to the appropriate directory  `(ex.~/Script)`  , and set executable permissions.  
-Make or change launchd's command-plist file, then put it to the appropriate directory. `(ex.~/Library/LaunchAgents)`  
-At the first run, confirmation dialog (xxx would like to control "System Events"...) will be appeared.  
+Make launchd's command-plist file to suit your enviroment, then put it to the appropriate directory. `(ex.~/Library/LaunchAgents)`  
+At the first run of all scripts, confirmation dialog (xxx would like to control "System Events"...) will be appeared.  
 Please allow it (in the case of Mojave )  
 ![tcc](https://user-images.githubusercontent.com/49780970/66635253-c39b1880-ec49-11e9-8e81-5ab511f87946.jpg)  
 If you did not allow by mistake, try `$ tccutil reset AppleEvents`  
