@@ -15,7 +15,7 @@
 ##
 ## Requirements:
 ##  -macOS
-##  -Login with a user with administrator privileges
+##  -Login-User with administrator privileges
 ##  -Test under macOS 10.14.4
 ##
 ## Install and Run:
