@@ -162,22 +162,26 @@ SendToLog "MSOffice SoftwareUpdates check Started"
  osascript <<-EOD && echo "Success" || echo "NotSuccess" 
 tell application "System Events"
  with timeout of 30 seconds
-  button returned of ( display dialog "$MesCautionToInstallMS" buttons {"Yes","No"} default button 1 with title "Caution" with icon POSIX file "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns" giving up after 20 )
+  button returned of ( display dialog "$MesCautionToInstallMS" buttons {"YES","NO"} default button 1 with title "Caution" with icon POSIX file "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns" giving up after 20 )
  end timeout
 end tell
 EOD
 )
 
-[ "$( echo $ReplyOfCautionDiag | grep "NO Success" )" ]      && # Reply is Cancel -> exit
+[ "$( echo $ReplyOfCautionDiag | grep "NO Success" )" ]      && # Reply is NO  -> exit
  SendToLog "Cancel MSOfficeSoftwareUpdates by User"          &&
  exit 0
 
-[ "$(echo $ReplyOfCautionDiag | grep "YES Success")" ]       && # Reply is OK     -> Change
+[ "$(echo $ReplyOfCautionDiag | grep "YES Success")" ]       && # Reply is YES -> Change
  echo $InstallCmdMS | sh                                     &&
  SendToLog "MSOffice SoftwareUpdates are Finished"           &&
- osascript <<-EOD &>/dev/null
+ osascript <<-EOD &>/dev/null                                &&
  tell application "System Events" to display dialog "$MesFinishInstall" buttons {"OK"} with title "Thank you" with icon 2 giving up after 10
 EOD
+ exit 0
 
+[ "$(echo $ReplyOfCautionDiag | grep "Success")" ]           && # Reply is ""  -> Timeout
+ SendToLog "MSOfficeSoftwareUpdates Caution is Timeout !"    &&
+ exit 0
 
 
