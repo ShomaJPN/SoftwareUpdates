@@ -101,21 +101,21 @@ function InstallSoftware ()
 
 # Set Reply and display dialog 
 ReplyOfCautionDiag=$(
-osascript <<-EOD &>/dev/null && echo OK || echo Cancel
+osascript <<-EOD && echo "Success" || echo "NotSuccess"
 tell application "System Events"
  with timeout of 30 seconds
-  display dialog "$Mes" with title "Caution" with icon POSIX file "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns" giving up after 20
+  button returned of ( display dialog "$Mes"  buttons {"YES","NO"} default button 1 with title "Caution" with icon POSIX file "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns" giving up after 20 )
  end timeout
 end tell
 EOD
 )
 
 # Reply is Cancel
-[ "$ReplyOfCautionDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates by User"
+[ "$ReplyOfCautionDiag" = "NO Success" ] && SendToLog "Cancel AppleSoftwareUpdates by User"
 
 
 # Reply is OK
-[ "$ReplyOfCautionDiag" = "OK" ]     &&
+[ "$ReplyOfCautionDiag" = "YES Success" ]     &&
 
 if [ "$1" = "with administrator privileges" ] ; then # Need to Restart
     SendToLog "Start Updates with Restart"           # Set Reply and display dialog
@@ -124,7 +124,7 @@ if [ "$1" = "with administrator privileges" ] ; then # Need to Restart
     do shell script "softwareupdate -ia --include-config-data && shutdown -r now 2>/dev/null" $1
 EOD
 )
-    [ "$ReplyOfAdminDiag" = "OK" ] && SendToLog "Finish AppleSoftwareUpdates (and restart)"
+    [ "$ReplyOfAdminDiag" = "OK" ] && SendToLog "Finish AppleSoftwareUpdates (and restart)" # <-Not work
     [ "$ReplyOfAdminDiag" = "Cancel" ] && SendToLog "Cancel AppleSoftwareUpdates by User (AdminPriv.)"
 
   elif [ -z "$1" ] ; then                            # No Need to Restart
@@ -176,7 +176,7 @@ InstallReqSoftwares=$(
   grep -v "*" |
   sed 's/^[[:space:]]*//'
 )
-RecommendSoftwares=$(echo "$ReplyOfUpdate" | grep recommended)
+RecommendSoftwares=$(echo "$ReplyOfUpdate" | grep "recommended\|Recommended: YES") #add grep-elem For Catalina
 NeedToRestartSoftwares=$(echo "$ReplyOfUpdate" | grep restart)
 NumOfSoftwares=$( echo "$InstallReqSoftwares" |grep -cv '^$' )
 
