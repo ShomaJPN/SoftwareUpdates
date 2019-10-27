@@ -121,7 +121,7 @@ echo "Num of Updates : " "$NumOfSoftwaresMS"
 
 MesCautionToInstallMS="IT support team
 
-There is an important software update for MS Office.
+There is an important update for MS Office.
 If you don't always update, you may have a problem.
 Is it okay to start the installation?
 
@@ -159,20 +159,20 @@ SendToLog "MSOffice SoftwareUpdates check Started"
  SendToLog "Num of Updates: ""$NumOfSoftwaresMS"             &&
  SendToLog "$( echo -n "$InstallSoftwaresMS" | tr '\n' ';')" &&
  ReplyOfCautionDiag=$(
- osascript <<-EOD &>/dev/null && echo OK || echo Cancel 
+ osascript <<-EOD && echo "Success" || echo "NotSuccess" 
 tell application "System Events"
  with timeout of 30 seconds
-  display dialog "$MesCautionToInstallMS" with title "Caution" with icon POSIX file "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns" giving up after 20
+  button returned of ( display dialog "$MesCautionToInstallMS" buttons {"Yes","No"} default button 1 with title "Caution" with icon POSIX file "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns" giving up after 20 )
  end timeout
 end tell
 EOD
 )
 
-[ "$ReplyOfCautionDiag" = "Cancel" ]                         && # Reply is Cancel -> exit
+[ "$( echo $ReplyOfCautionDiag | grep "NO Success" )" ]      && # Reply is Cancel -> exit
  SendToLog "Cancel MSOfficeSoftwareUpdates by User"          &&
  exit 0
 
-[ "$ReplyOfCautionDiag" = "OK" ]                             && # Reply is OK
+[ "$(echo $ReplyOfCautionDiag | grep "YES Success")" ]       && # Reply is OK     -> Change
  echo $InstallCmdMS | sh                                     &&
  SendToLog "MSOffice SoftwareUpdates are Finished"           &&
  osascript <<-EOD &>/dev/null
