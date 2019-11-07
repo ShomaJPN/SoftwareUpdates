@@ -25,12 +25,12 @@
 ##   - Make commnad-plist file and put it ~/Library/LaunchAgents/
 ##    - Start with the following command (only the first time)
 ##       launchctl load /Path/to/plist
-##  　- Stop is ...
+##    - Stop is ...
 ##       launchctl unload /Path/to/plist
 ##    - Stop forever...
-##       　Remove plist from ~/Library/LaunchAgents/
+##         Remove plist from ~/Library/LaunchAgents/
 ##    - Check is ...
-##       　launchctl list
+##         launchctl list
 ##  - A confirmation dialog (xxx would like to control "System Events"...)
 ##    appear at the first run, then push allow button.  
 ## 
@@ -38,7 +38,7 @@
 ##  If you did not confirm by mistake, try "$ tccutil reset AppleEvents"
 ##  
 ##  /usr/sbin/softwareupdate
-##   -l　                    : List all available updates
+##   -l                      : List all available updates
 ##   -ia                     : Install all updates /WO GateKeeper & XProtectData
 ##     --include-config-data : ..including GateKeeper & XProtect data
 ##
