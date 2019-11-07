@@ -25,12 +25,12 @@
 ##   - Make commnad-plist file and put it ~/Library/LaunchAgents/
 ##    - Start with the following command (only the first time)
 ##       launchctl load /Path/to/plist
-##  　- Stop is ...
+##    - Stop is ...
 ##       launchctl unload /Path/to/plist
 ##    - Stop forever...
-##       　Remove plist from ~/Library/LaunchAgents/
+##         Remove plist from ~/Library/LaunchAgents/
 ##    - Check is ...
-##       　launchctl list
+##         launchctl list
 ##  - A confirmation dialog (xxx would like to control "System Events"...)
 ##    appear at the first run, then push allow button.  
 ## 
@@ -97,36 +97,33 @@ GetUpPolCmdAp="defaults read /Library/Preferences/com.apple.SoftwareUpdate.plist
 SetUpPolCmdAp="defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist"
 
 [ "$( $GetUpPolCmdMAS | grep 'AutoUpdate =' |grep 0 )" ]                &&
-ChgPolicyCmd=$SetUpPolCmdMAS" AutoUpdate -int 1" 
+ChgPolicyCmd=$SetUpPolCmdMAS" AutoUpdate -int 1 ;" 
 
 [ "$( $GetUpPolCmdAp | grep AutomaticCheckEnabled |grep 0 )" ]          &&
-[ -n "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
-ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticCheckEnabled -int 1"
+ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticCheckEnabled -int 1 ;"
 
 [ "$( $GetUpPolCmdAp | grep AutomaticDownload |grep 0 )" ]              &&
-[ -n "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
-ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticDownload -int 1"
+ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticDownload -int 1 ;"
 
 [ "$( $GetUpPolCmdAp | grep AutomaticallyInstall |grep 0 )" ]           &&
-[ -n "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
-ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticallyInstallMacOSUpdates -int 1"
+ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" AutomaticallyInstallMacOSUpdates -int 1 ;"
 
 [ "$( $GetUpPolCmdAp | grep ConfigDataInstal |grep 0 )" ]               &&
-[ -n "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
-ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" ConfigDataInstall -int 1"
+ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" ConfigDataInstall -int 1 ;"
 
 [ "$( $GetUpPolCmdAp | grep CriticalUpdateInstal |grep 0 )" ]           &&
-[ -n "$ChgPolicyCmd" ] && ChgPolicyCmd=$ChgPolicyCmd" ;"              &&
 ChgPolicyCmd="$ChgPolicyCmd""$SetUpPolCmdAp"" CriticalUpdateInstall -int 1"
 
 # ChgPolicyItems: extract all Items from ChgPolicyCmd
 ChgPolicyItems=$(
-  echo "$ChgPolicyCmd"  |
-  sed -e 's/defaults write \/Library\/Preferences\/com.apple.commerce.plist //g' |
+  echo "$ChgPolicyCmd"                                                                 |
+  sed -e 's/defaults write \/Library\/Preferences\/com.apple.commerce.plist //g'       |
   sed -e 's/defaults write \/Library\/Preferences\/com.apple.SoftwareUpdate.plist //g' |
-  sed -e 's/ -int 1//g' |
+  sed -e 's/ -int 1//g'                                                                |
+  sed -e 's/;$//'                                                                      |
   sed -e 's/;/,/g'
 )
+
 
 # NumOfChgPolicyItems
 NumOfChgPolicyItems=$( echo "$ChgPolicyItems" | awk -F ',' '{print NF}' ) 
